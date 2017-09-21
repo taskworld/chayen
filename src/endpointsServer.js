@@ -3,6 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const Joi = require('joi')
 const Boom = require('boom')
+const Promise = require('bluebird')
 
 let _start = false
 
@@ -28,11 +29,17 @@ function setupServer () {
           })
         } catch (err) {
           if (err.output && err.output.statusCode) {
+            // Boom Error
             res.status(err.output.statusCode)
+            res.send(err)
           } else {
+            // Unexpected error
             res.status(500)
+            res.send({
+              message: err.message,
+              name: err.name
+            })
           }
-          res.send(err)
         }
       })
 
@@ -48,22 +55,32 @@ function setupServer () {
   })
 }
 
-function addEndpoint ({ topic, schemas, handler }) {
+function addEndpoint ({ topic, schemas, handler, timeout }) {
+  timeout = timeout || 20000
   handlerMap[topic] = {
-    schemas, handler
+    schemas, handler, timeout
   }
 }
 
 async function executeEndpoint ({ topic, payload }) {
   const endpointData = handlerMap[topic]
-  if (endpointData.schemas) {
-    const v = Joi.validate(payload, endpointData.schemas)
+  const { schemas, handler, timeout } = endpointData
+  if (schemas) {
+    const v = Joi.validate(payload, schemas)
     if (v.error) {
       throw Boom.badData('Invalid schemas: ', v.error.message)
     }
     payload = v.value
   }
-  const result = await endpointData.handler({ payload })
+  let result
+  try {
+    result = await Promise.try(() => handler({ payload })).timeout(timeout)
+  } catch (err) {
+    if (err.name === 'TimeoutError') {
+      throw Boom.clientTimeout(err.message)
+    }
+    throw err
+  }
   return result
 }
 

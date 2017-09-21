@@ -17,7 +17,7 @@ async function makeRequest ({ topic, payload }) {
       if (boomError) {
         throw boomError
       } else {
-        throw err
+        throw new Error(errData.message)
       }
     } else {
       throw err
