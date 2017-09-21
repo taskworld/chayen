@@ -1,0 +1,33 @@
+{
+  "name": "tw-rpc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_ENV=test mocha $(find ./src/ -name '*.test.js')",
+    "dev": "nodemon ./src/setup"
+  },
+  "author": "Chris Taskworld",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.16.2",
+    "body-parser": "^1.18.1",
+    "boom": "^5.2.0",
+    "express": "^4.15.4",
+    "joi": "^11.0.3",
+    "lodash": "^4.17.4",
+    "superagent": "^3.6.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "eslint": "^4.7.1",
+    "eslint-config-standard": "^7.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "eslint-plugin-node": "^4.2.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^2.1.1",
+    "mocha": "^3.5.3",
+    "nodemon": "^1.12.1"
+  }
+}
