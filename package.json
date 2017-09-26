@@ -4,12 +4,25 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha $(find ./src/ -name '*.test.js')",
+    "test": "jest",
     "dev": "nodemon ./src/setup",
     "build": "tsc --project ./"
   },
   "author": "Chris Taskworld",
   "license": "ISC",
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/src/integration/.*)\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
+  },
   "dependencies": {
     "axios": "^0.16.2",
     "bluebird": "^3.5.0",
@@ -34,6 +47,7 @@
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
+    "jest": "^21.1.0",
     "mocha": "^3.5.3",
     "nodemon": "^1.12.1",
     "ts-jest": "^21.0.1",

@@ -1,9 +1,9 @@
 import * as _ from 'lodash'
 import * as request from 'superagent'
 
-async function makeRequest ({ topic, payload }) {
+async function makeRequest({ topic, payload, target = `http://localhost:${global.HACK_PORT}/rpc` }) {
   try {
-    const result = await request.post('http://localhost:3000/rpc').send({
+    const result = await request.post(target).send({
       topic,
       payload
     })

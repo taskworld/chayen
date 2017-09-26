@@ -43,8 +43,13 @@ export async function setupServer () {
     }
   })
 
-  app.listen(3000, function () {
-    console.log('RPC Setup on port 3000!')
+  await new P((resolve) => {
+    app.listen(function (this: any) {
+      const address = this.address()
+      global.HACK_PORT = address.port
+      console.log(`RPC Setup on port ${address.port}!`)
+      resolve()
+    })
   })
 
   _start = true
