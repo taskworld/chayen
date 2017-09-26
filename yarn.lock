@@ -2,6 +2,28 @@
 # yarn lockfile v1
 
 
+"@types/bluebird@^3.5.12":
+  version "3.5.12"
+  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.12.tgz#180881847ff664e9e294a5dcdcd4c8e9a150e5a7"
+
+"@types/joi@^10.4.3":
+  version "10.4.3"
+  resolved "https://registry.yarnpkg.com/@types/joi/-/joi-10.4.3.tgz#1d82cd9a79194f3dd0685d5d2c220a77a9c0776b"
+
+"@types/lodash@^4.14.76":
+  version "4.14.76"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.76.tgz#87874f766774d54e89589697340be9496fb8bf70"
+
+"@types/node@*":
+  version "8.0.31"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.31.tgz#d9af61093cf4bfc9f066ca34de0175012cfb0ce9"
+
+"@types/superagent@^3.5.5":
+  version "3.5.5"
+  resolved "https://registry.yarnpkg.com/@types/superagent/-/superagent-3.5.5.tgz#f4378cec9105dce5f74979c8e4a1ff3fe18a5aca"
+  dependencies:
+    "@types/node" "*"
+
 abbrev@1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.0.tgz#d0554c2256636e2f56e7c2e5ad183f859428d81f"
@@ -2575,6 +2597,10 @@ type-is@~1.6.15:
 typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
+
+typescript@^2.5.2:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.5.2.tgz#038a95f7d9bbb420b1bf35ba31d4c5c1dd3ffe34"
 
 uid-number@^0.0.6:
   version "0.0.6"

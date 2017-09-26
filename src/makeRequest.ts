@@ -1,5 +1,5 @@
-const _ = require('lodash')
-const request = require('superagent')
+import _ from 'lodash'
+import request from 'superagent'
 
 async function makeRequest ({ topic, payload }) {
   try {
@@ -25,4 +25,4 @@ async function makeRequest ({ topic, payload }) {
   }
 }
 
-module.exports = makeRequest
+export default makeRequest

@@ -20,6 +20,10 @@
     "superagent": "^3.6.0"
   },
   "devDependencies": {
+    "@types/bluebird": "^3.5.12",
+    "@types/joi": "^10.4.3",
+    "@types/lodash": "^4.14.76",
+    "@types/superagent": "^3.5.5",
     "chai": "^4.1.2",
     "eslint": "^4.7.1",
     "eslint-config-standard": "^7.0.1",
@@ -29,6 +33,7 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^2.1.1",
     "mocha": "^3.5.3",
-    "nodemon": "^1.12.1"
+    "nodemon": "^1.12.1",
+    "typescript": "^2.5.2"
   }
 }
