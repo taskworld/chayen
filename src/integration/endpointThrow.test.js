@@ -1,6 +1,6 @@
 const { assert } = require('chai')
-const createEndpoint = require('../createEndpoint')
-const makeRequest = require('../makeRequest')
+const createEndpoint = require('../../build/createEndpoint').default
+const makeRequest = require('../../build/makeRequest').default
 
 describe('endpoint Throw', () => {
   it('Create endpoint and make request', async () => {

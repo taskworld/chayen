@@ -1,8 +1,6 @@
-import EndpointServer from './endpointsServer'
+import * as EndpointServer from './endpointsServer'
 
-async function createEndpoint ({ topic, schemas, handler, timeout }) {
+export default async function createEndpoint ({ topic, schemas, handler, timeout }) {
   await EndpointServer.setupServer()
   EndpointServer.addEndpoint({ topic, schemas, handler, timeout })
 }
-
-export default createEndpoint

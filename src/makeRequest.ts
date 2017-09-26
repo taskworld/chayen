@@ -1,5 +1,5 @@
-import _ from 'lodash'
-import request from 'superagent'
+import * as _ from 'lodash'
+import * as request from 'superagent'
 
 async function makeRequest ({ topic, payload }) {
   try {

@@ -1,7 +1,7 @@
 const Promise = require('bluebird')
 const { assert } = require('chai')
-const createEndpoint = require('../createEndpoint')
-const makeRequest = require('../makeRequest')
+const createEndpoint = require('../../build/createEndpoint').default
+const makeRequest = require('../../build/makeRequest').default
 const Joi = require('joi')
 
 describe('Endpoint timeout', () => {
