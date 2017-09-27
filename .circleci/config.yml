@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: jonbaldie/yarn
+    steps:
+      - checkout
+      - yarn
+      - yarn test
+  build:
+    docker:
+      - image: jonbaldie/yarn
+    steps:
+      - checkout
+      - yarn
+      - yarn build
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      - test
+      - build:
+          requires:
+            - unit-test
+          filters:
+            branches:
+              only:
+                - master
