@@ -21,7 +21,7 @@ workflows:
       - test
       - build:
           requires:
-            - unit-test
+            - test
           filters:
             branches:
               only:
