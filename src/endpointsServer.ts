@@ -43,7 +43,7 @@ export async function setupServer () {
     }
   })
 
-  await new P((resolve) => {
+  await new Promise((resolve) => {
     app.listen(function (this: any) {
       const address = this.address()
       ;(global as any).HACK_PORT = address.port
