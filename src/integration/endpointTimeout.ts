@@ -1,6 +1,5 @@
-import * as Joi from 'joi'
-import * as P from 'bluebird'
-
+import Joi from 'joi'
+import P from 'bluebird'
 import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
 

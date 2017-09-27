@@ -1,5 +1,4 @@
-import * as Joi from 'joi'
-
+import Joi from 'joi'
 import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
 

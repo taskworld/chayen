@@ -1,6 +1,6 @@
+import Joi from 'joi'
 import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
-import * as Joi from 'joi'
 
 test('Sanity', async () => {
   expect(1 + 1).toBe(2)

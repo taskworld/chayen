@@ -1,8 +1,8 @@
-import * as Boom from 'boom'
-import * as Joi from 'joi'
-import * as P from 'bluebird'
-import * as bodyParser from 'body-parser'
-import * as express from 'express'
+import Boom from 'boom'
+import Joi from 'joi'
+import P from 'bluebird'
+import bodyParser from 'body-parser'
+import express from 'express'
 
 const app = express()
 let _start = false

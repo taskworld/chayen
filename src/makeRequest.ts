@@ -1,5 +1,5 @@
-import * as _ from 'lodash'
-import * as request from 'superagent'
+import _ from 'lodash'
+import request from 'superagent'
 
 async function makeRequest ({ topic, payload, target = `http://localhost:${(global as any).HACK_PORT}/rpc` }) {
   try {
