@@ -46,7 +46,7 @@ export async function setupServer () {
   await new P((resolve) => {
     app.listen(function (this: any) {
       const address = this.address()
-      global.HACK_PORT = address.port
+      ;(global as any).HACK_PORT = address.port
       console.log(`RPC Setup on port ${address.port}!`)
       resolve()
     })
