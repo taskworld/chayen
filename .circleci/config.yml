@@ -5,24 +5,10 @@ jobs:
       - image: jonbaldie/yarn
     steps:
       - checkout
-      - yarn
-      - yarn test
-  build:
-    docker:
-      - image: jonbaldie/yarn
-    steps:
-      - checkout
-      - yarn
-      - yarn build
+      - run: yarn
+      - run: yarn test
 workflows:
   version: 2
   test_and_build:
     jobs:
       - test
-      - build:
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - master
