@@ -1,6 +1,7 @@
+import * as Joi from 'joi'
+
 import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
-import * as Joi from 'joi'
 
 test('Throw on invalid schemas', async () => {
   await createEndpoint({

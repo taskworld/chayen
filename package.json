@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "dev": "nodemon ./src/setup",
-    "build": "tsc --project ./"
+    "build": "tsc --project .",
+    "lint": "tslint --project ."
   },
   "author": "Chris Taskworld",
   "license": "ISC",

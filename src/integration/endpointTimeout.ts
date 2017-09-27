@@ -1,7 +1,8 @@
+import * as Joi from 'joi'
 import * as P from 'bluebird'
+
 import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
-import * as Joi from 'joi'
 
 test('Throw on timeout', async () => {
   await createEndpoint({

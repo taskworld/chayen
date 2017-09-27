@@ -1,13 +1,13 @@
-import * as express from 'express'
-import * as bodyParser from 'body-parser'
-import * as Joi from 'joi'
 import * as Boom from 'boom'
+import * as Joi from 'joi'
 import * as P from 'bluebird'
+import * as bodyParser from 'body-parser'
+import * as express from 'express'
 
 const app = express()
 let _start = false
 
-const handlerMap = { }
+const handlerMap = {}
 
 export async function setupServer () {
   if (_start) return

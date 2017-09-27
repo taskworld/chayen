@@ -1,6 +1,7 @@
+import * as Joi from 'joi'
+
 import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
-import * as Joi from 'joi'
 
 test('Pass metadata', async () => {
   await createEndpoint({
@@ -11,7 +12,7 @@ test('Pass metadata', async () => {
     handler: async ({ payload }) => {
       const res = await makeRequest({
         topic: 'plus2',
-        payload: payload,
+        payload: payload
       })
       return res + 1
     }
@@ -48,6 +49,6 @@ test('Pass metadata', async () => {
       number: 1
     }
   })
-  
+
   expect(res).toBe(5)
 })
