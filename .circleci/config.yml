@@ -2,7 +2,7 @@ version: 2
 jobs:
   test:
     docker:
-      - image: jonbaldie/yarn
+      - image: kkarczmarczyk/node-yarn:8.0
     steps:
       - checkout
       - run: yarn
