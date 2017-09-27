@@ -1,17 +1,18 @@
-import * as EndpointsServer from '../endpointsServer'
+import {
+  createEndpoint,
+  setupServer,
+  terminateServer
+} from '../endpointsServer'
 
 import Joi from 'joi'
-import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
 
 beforeEach(async () => {
-  console.log('start')
-  await EndpointsServer.setupServer()
+  await setupServer()
 })
 
 afterEach(async () => {
-  console.log('terminate')
-  await EndpointsServer.terminate()
+  await terminateServer()
 })
 
 test('Sanity', async () => {
@@ -19,7 +20,7 @@ test('Sanity', async () => {
 })
 
 test('Create endpoint and make request', async () => {
-  await createEndpoint({
+  createEndpoint({
     topic: 'plus1',
     schemas: Joi.object().keys({
       number: Joi.number().required()
@@ -29,7 +30,7 @@ test('Create endpoint and make request', async () => {
     }
   })
 
-  await createEndpoint({
+  createEndpoint({
     topic: 'plus2',
     schemas: Joi.object().keys({
       number: Joi.number().required()

@@ -1,19 +1,22 @@
-import * as EndpointsServer from '../endpointsServer'
+import {
+  createEndpoint,
+  setupServer,
+  terminateServer
+} from '../endpointsServer'
 
 import Joi from 'joi'
-import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
 
 beforeEach(async () => {
-  await EndpointsServer.setupServer()
+  await setupServer()
 })
 
 afterEach(async () => {
-  await EndpointsServer.terminate()
+  await terminateServer()
 })
 
 test('Throw on invalid schemas', async () => {
-  await createEndpoint({
+  createEndpoint({
     topic: 'plus1',
     schemas: Joi.object().keys({
       number: Joi.number().required()
@@ -22,7 +25,7 @@ test('Throw on invalid schemas', async () => {
       return payload.number + 1
     }
   })
-  await createEndpoint({
+  createEndpoint({
     topic: 'plus2',
     schemas: Joi.object().keys({
       number: Joi.number().required()

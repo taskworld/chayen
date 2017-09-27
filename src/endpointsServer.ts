@@ -54,12 +54,15 @@ export async function setupServer () {
   })
 }
 
-export function addEndpoint ({ topic, schemas, handler, timeout }) {
-  timeout = timeout || 20000
+const DEFAULT_TIMEOUT = 20000
+
+export function createEndpoint ({ topic, schemas, handler, timeout = DEFAULT_TIMEOUT }) {
+  if (handlerMap[topic]) throw new Error('endpoint already existed!')
+
   handlerMap[topic] = { schemas, handler, timeout }
 }
 
-export async function terminate () {
+export async function terminateServer () {
   if (!server) return
   await (server as any).close()
   server = null

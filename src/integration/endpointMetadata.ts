@@ -1,19 +1,22 @@
-import * as EndpointsServer from '../endpointsServer'
+import {
+  createEndpoint,
+  setupServer,
+  terminateServer
+} from '../endpointsServer'
 
 import Joi from 'joi'
-import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
 
 beforeEach(async () => {
-  await EndpointsServer.setupServer()
+  await setupServer()
 })
 
 afterEach(async () => {
-  await EndpointsServer.terminate()
+  await terminateServer()
 })
 
 test('Pass metadata', async () => {
-  await createEndpoint({
+  createEndpoint({
     topic: 'plus3',
     schemas: Joi.object().keys({
       number: Joi.number().required()
@@ -26,7 +29,7 @@ test('Pass metadata', async () => {
       return res + 1
     }
   })
-  await createEndpoint({
+  createEndpoint({
     topic: 'plus2',
     schemas: Joi.object().keys({
       number: Joi.number().required()
@@ -37,7 +40,7 @@ test('Pass metadata', async () => {
       return second
     }
   })
-  await createEndpoint({
+  createEndpoint({
     topic: 'plus1',
     schemas: Joi.object().keys({
       number: Joi.number().required()
