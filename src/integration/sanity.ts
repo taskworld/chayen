@@ -1,6 +1,18 @@
+import * as EndpointsServer from '../endpointsServer'
+
 import Joi from 'joi'
 import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
+
+beforeEach(async () => {
+  console.log('start')
+  await EndpointsServer.setupServer()
+})
+
+afterEach(async () => {
+  console.log('terminate')
+  await EndpointsServer.terminate()
+})
 
 test('Sanity', async () => {
   expect(1 + 1).toBe(2)

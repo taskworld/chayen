@@ -1,6 +1,16 @@
+import * as EndpointsServer from '../endpointsServer'
+
 import Joi from 'joi'
 import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
+
+beforeEach(async () => {
+  await EndpointsServer.setupServer()
+})
+
+afterEach(async () => {
+  await EndpointsServer.terminate()
+})
 
 test('Create endpoint and make request', async () => {
   await createEndpoint({

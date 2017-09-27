@@ -5,12 +5,13 @@ import bodyParser from 'body-parser'
 import express from 'express'
 
 const app = express()
-let _start = false
+
+let server = null
 
 const handlerMap = {}
 
 export async function setupServer () {
-  if (_start) return
+  if (server) return
 
   app.get('/', function (req, res) {
     res.send('Hello World!')
@@ -44,22 +45,24 @@ export async function setupServer () {
   })
 
   await new Promise((resolve) => {
-    app.listen(function (this: any) {
+    server = app.listen(function (this: any) {
       const address = this.address()
-      ;(global as any).HACK_PORT = address.port
+      ; (global as any).HACK_PORT = address.port
       console.log(`RPC Setup on port ${address.port}!`)
       resolve()
     })
   })
-
-  _start = true
 }
 
 export function addEndpoint ({ topic, schemas, handler, timeout }) {
   timeout = timeout || 20000
-  handlerMap[topic] = {
-    schemas, handler, timeout
-  }
+  handlerMap[topic] = { schemas, handler, timeout }
+}
+
+export async function terminate () {
+  if (!server) return
+  await (server as any).close()
+  server = null
 }
 
 async function executeEndpoint ({ topic, payload }) {

@@ -1,7 +1,17 @@
+import * as EndpointsServer from '../endpointsServer'
+
 import Bluebird from 'bluebird'
 import Joi from 'joi'
 import createEndpoint from '../createEndpoint'
 import makeRequest from '../makeRequest'
+
+beforeEach(async () => {
+  await EndpointsServer.setupServer()
+})
+
+afterEach(async () => {
+  await EndpointsServer.terminate()
+})
 
 test('Throw on timeout', async () => {
   await createEndpoint({
