@@ -82,11 +82,11 @@ async function executeEndpoint ({ topic, payload, metadata }) {
   }
   let result
   try {
-    const delegateRequest = ({ topic, payload }) => {
+    const makeDelegateRequestAsync = ({ topic, payload }) => {
       metadata.push({ topic, timestamp: new Date().getTime() })
       return makeRequest({ topic, payload, metadata })
     }
-    result = await Bluebird.try(() => handler({ payload, delegateRequest })).timeout(timeout)
+    result = await Bluebird.try(() => handler({ payload }, { makeDelegateRequestAsync })).timeout(timeout)
   } catch (err) {
     if (err.name === 'TimeoutError') {
       throw Boom.clientTimeout(err.message)

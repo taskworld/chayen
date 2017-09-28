@@ -21,8 +21,8 @@ test('Pass metadata', async () => {
     schemas: Joi.object().keys({
       number: Joi.number().required()
     }),
-    handler: async ({ payload, delegateRequest }) => {
-      const res = await delegateRequest({
+    handler: async ({ payload }, delegator) => {
+      const res = await delegator.makeDelegateRequestAsync({
         topic: 'plus2',
         payload: payload
       })
@@ -34,9 +34,9 @@ test('Pass metadata', async () => {
     schemas: Joi.object().keys({
       number: Joi.number().required()
     }),
-    handler: async ({ payload, delegateRequest }) => {
-      const first = await delegateRequest({ topic: 'plus1', payload: { number: payload.number } })
-      const second = await delegateRequest({ topic: 'plus1', payload: { number: first } })
+    handler: async ({ payload }, delegator) => {
+      const first = await delegator.makeDelegateRequestAsync({ topic: 'plus1', payload: { number: payload.number } })
+      const second = await delegator.makeDelegateRequestAsync({ topic: 'plus1', payload: { number: first } })
       return second
     }
   })
