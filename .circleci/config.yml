@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: kkarczmarczyk/node-yarn:8.0
+    steps:
+      - checkout
+      - run: yarn
+      - run: yarn test
+  build:
+    docker:
+      - image: kkarczmarczyk/node-yarn:8.0
+    steps:
+      - checkout
+      - run: yarn
+      - run: yarn build
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
