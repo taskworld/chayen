@@ -80,8 +80,7 @@ async function executeEndpoint ({ topic, payload }) {
   }
   let result
   try {
-    // TODO: remove tslint-disable after create custom rule for bluebird promise
-    result = await Bluebird.try(() => handler({ payload })).timeout(timeout) // tslint:disable-line:await-promise
+    result = await Bluebird.try(() => handler({ payload })).timeout(timeout)
   } catch (err) {
     if (err.name === 'TimeoutError') {
       throw Boom.clientTimeout(err.message)

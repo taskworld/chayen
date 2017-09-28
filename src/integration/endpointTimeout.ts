@@ -24,8 +24,7 @@ test('Throw on timeout', async () => {
     }),
     timeout: 100,
     handler: async ({ payload }) => {
-      // TODO: remove tslint-disable after create custom rule for bluebird promise
-      await Bluebird.delay(103) // tslint:disable-line:await-promise
+      await Bluebird.delay(103)
       return payload.number + 1
     }
   })
