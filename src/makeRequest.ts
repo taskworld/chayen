@@ -1,9 +1,9 @@
-const _ = require('lodash')
-const request = require('superagent')
+import _ from 'lodash'
+import request from 'superagent'
 
-async function makeRequest ({ topic, payload }) {
+async function makeRequest ({ topic, payload, target = `http://localhost:${(global as any).HACK_PORT}/rpc` }) {
   try {
-    const result = await request.post('http://localhost:3000/rpc').send({
+    const result = await request.post(target).send({
       topic,
       payload
     })
@@ -25,4 +25,4 @@ async function makeRequest ({ topic, payload }) {
   }
 }
 
-module.exports = makeRequest
+export default makeRequest
