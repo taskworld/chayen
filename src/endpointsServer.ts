@@ -82,7 +82,7 @@ async function executeEndpoint ({ topic, payload, metadata }) {
   }
   let result
   try {
-    const delegateRequest = (topic, payload) => {
+    const delegateRequest = ({ topic, payload }) => {
       metadata.push({ topic, timestamp: new Date().getTime() })
       return makeRequest({ topic, payload, metadata })
     }
