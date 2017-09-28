@@ -3,6 +3,7 @@ import Boom from 'boom'
 import Joi from 'joi'
 import bodyParser from 'body-parser'
 import express from 'express'
+import makeRequest from './makeRequest'
 
 const app = express()
 
@@ -23,7 +24,8 @@ export async function setupServer () {
     try {
       const result = await executeEndpoint({
         topic: req.body.topic,
-        payload: req.body.payload
+        payload: req.body.payload,
+        metadata: req.body.metadata || []
       })
       res.json({
         payload: JSON.stringify(result)
@@ -68,7 +70,7 @@ export async function terminateServer () {
   server = null
 }
 
-async function executeEndpoint ({ topic, payload }) {
+async function executeEndpoint ({ topic, payload, metadata }) {
   const endpointData = handlerMap[topic]
   const { schemas, handler, timeout } = endpointData
   if (schemas) {
@@ -80,7 +82,11 @@ async function executeEndpoint ({ topic, payload }) {
   }
   let result
   try {
-    result = await Bluebird.try(() => handler({ payload })).timeout(timeout)
+    const delegateRequest = ({ topic, payload }) => {
+      metadata.push({ topic, timestamp: new Date().getTime() })
+      return makeRequest({ topic, payload, metadata })
+    }
+    result = await Bluebird.try(() => handler({ payload, delegateRequest })).timeout(timeout)
   } catch (err) {
     if (err.name === 'TimeoutError') {
       throw Boom.clientTimeout(err.message)
