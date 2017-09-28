@@ -29,6 +29,7 @@ test('Pass metadata', async () => {
       return res + 1
     }
   })
+
   createEndpoint({
     topic: 'plus2',
     schemas: Joi.object().keys({
@@ -40,6 +41,7 @@ test('Pass metadata', async () => {
       return second
     }
   })
+
   createEndpoint({
     topic: 'plus1',
     schemas: Joi.object().keys({
@@ -49,16 +51,11 @@ test('Pass metadata', async () => {
       return payload.number + 1
     }
   })
+
   const res = await makeRequest({
     topic: 'plus3',
     payload: {
       number: 2
-    }
-  })
-  await makeRequest({
-    topic: 'plus1',
-    payload: {
-      number: 1
     }
   })
 

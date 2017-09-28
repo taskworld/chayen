@@ -15,7 +15,7 @@ afterEach(async () => {
   await terminateServer()
 })
 
-test('Throw on invalid schemas', async () => {
+test('Should throw on invalid schemas', async () => {
   createEndpoint({
     topic: 'plus1',
     schemas: Joi.object().keys({
@@ -25,15 +25,7 @@ test('Throw on invalid schemas', async () => {
       return payload.number + 1
     }
   })
-  createEndpoint({
-    topic: 'plus2',
-    schemas: Joi.object().keys({
-      number: Joi.number().required()
-    }),
-    handler: async ({ payload }) => {
-      return payload.number + 2
-    }
-  })
+
   try {
     await makeRequest({
       topic: 'plus1',
