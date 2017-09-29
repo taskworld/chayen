@@ -15,7 +15,7 @@ afterEach(async () => {
   await terminateServer()
 })
 
-test('Should throw error', async () => {
+test('Should throw error when there is an error', async () => {
   createEndpoint({
     topic: 'err',
     schemas: Joi.object().keys({
