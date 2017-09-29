@@ -3,20 +3,25 @@ import Boom from 'boom'
 import Joi from 'joi'
 import bodyParser from 'body-parser'
 import express from 'express'
-import makeRequest from './makeRequest'
+import http from 'http'
+import makeRequest, { MakeRequestParameters } from './makeRequest'
 
 const app = express()
 
-let server = null
+let server: null | http.Server = null
 
 const handlerMap = {}
 
-export async function setupServer () {
-  if (server) return
+export interface ServerOptions {}
 
-  app.get('/', function (req, res) {
-    res.send('Hello World!')
-  })
+export interface Address {
+  port: number
+  family: string
+  address: string
+}
+
+export async function setupServer (options?: ServerOptions): Promise<Address> {
+  if (server) return server.address()
 
   app.use(bodyParser.json())
 
@@ -24,19 +29,16 @@ export async function setupServer () {
     try {
       const result = await executeEndpoint({
         topic: req.body.topic,
-        payload: req.body.payload,
-        metadata: req.body.metadata || []
+        payload: req.body.payload
       })
       res.json({
         payload: JSON.stringify(result)
       })
     } catch (err) {
-      if (err.output && err.output.statusCode) {
-        // Boom Error
+      if (err.isBoom) {
         res.status(err.output.statusCode)
         res.send(err)
       } else {
-        // Unexpected error
         res.status(500)
         res.send({
           message: err.message,
@@ -46,19 +48,38 @@ export async function setupServer () {
     }
   })
 
-  await new Promise((resolve) => {
-    server = app.listen(function (this: any) {
-      const address = this.address()
-      ; (global as any).HACK_PORT = address.port
+  const address = await new Promise<Address>(resolve => {
+    server = app.listen(function () {
+      const address = (server as http.Server).address()
       console.log(`RPC Setup on port ${address.port}!`)
-      resolve()
+      resolve(address)
     })
   })
+
+  return address
 }
 
 const DEFAULT_TIMEOUT = 20000
 
-export function createEndpoint ({ topic, schemas, handler, timeout = DEFAULT_TIMEOUT }) {
+export interface Delegator {
+  makeDelegateRequestAsync (params: MakeRequestParameters): any
+}
+
+export interface EndpointParameters {
+  topic: string
+  schemas: Joi.Schema
+  timeout?: number
+  opts?: { cache: false | { ttl: number } }
+  handler (payload: any, delegator: Delegator): any
+}
+
+export function createEndpoint ({
+  topic,
+  schemas,
+  handler,
+  timeout = DEFAULT_TIMEOUT,
+  opts = { cache: false }
+}: EndpointParameters) {
   if (handlerMap[topic]) throw new Error('endpoint already existed!')
 
   handlerMap[topic] = { schemas, handler, timeout }
@@ -70,7 +91,12 @@ export async function terminateServer () {
   server = null
 }
 
-async function executeEndpoint ({ topic, payload, metadata }) {
+export interface ExecuteEndpointParameters {
+  topic: string
+  payload: any
+}
+
+async function executeEndpoint ({ topic, payload }: ExecuteEndpointParameters) {
   const endpointData = handlerMap[topic]
   const { schemas, handler, timeout } = endpointData
   if (schemas) {
@@ -83,12 +109,11 @@ async function executeEndpoint ({ topic, payload, metadata }) {
   let result
   try {
     const delegator = {
-      makeDelegateRequestAsync: ({ topic, payload }) => {
-        metadata.push({ topic, timestamp: new Date().getTime() })
-        return makeRequest({ topic, payload, metadata })
+      makeDelegateRequestAsync: ({ topic, payload, target }: MakeRequestParameters) => {
+        return makeRequest({ topic, payload, target })
       }
     }
-    result = await Bluebird.try(() => handler({ payload }, delegator)).timeout(timeout)
+    result = await Bluebird.try(() => handler(payload, delegator)).timeout(timeout)
   } catch (err) {
     if (err.name === 'TimeoutError') {
       throw Boom.clientTimeout(err.message)

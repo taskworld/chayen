@@ -7,8 +7,10 @@ import {
 import Joi from 'joi'
 import makeRequest from '../makeRequest'
 
+let address
+
 beforeEach(async () => {
-  await setupServer()
+  address = await setupServer()
 })
 
 afterEach(async () => {
@@ -21,7 +23,7 @@ test('Should throw error when there is an error', async () => {
     schemas: Joi.object().keys({
       number: Joi.number().required()
     }),
-    handler: async ({ payload }) => {
+    handler: async (payload) => {
       throw new Error('Force error')
     }
   })
@@ -31,7 +33,8 @@ test('Should throw error when there is an error', async () => {
       topic: 'err',
       payload: {
         number: 2
-      }
+      },
+      target: `http://localhost:${address.port}/rpc`
     })
   } catch (err) {
     expect(err.message).toBe('Force error')
