@@ -15,17 +15,7 @@ afterEach(async () => {
   await terminateServer()
 })
 
-test('Create endpoint and make request', async () => {
-  createEndpoint({
-    topic: 'plus1',
-    schemas: Joi.object().keys({
-      number: Joi.number().required()
-    }),
-    handler: async ({ payload }) => {
-      return payload.number + 1
-    }
-  })
-
+test('Should throw error when there is an error', async () => {
   createEndpoint({
     topic: 'err',
     schemas: Joi.object().keys({

@@ -16,7 +16,7 @@ afterEach(async () => {
   await terminateServer()
 })
 
-test('Throw on timeout', async () => {
+test('Should throw on timeout', async () => {
   createEndpoint({
     topic: 'plus1',
     schemas: Joi.object().keys({
@@ -28,6 +28,7 @@ test('Throw on timeout', async () => {
       return payload.number + 1
     }
   })
+
   try {
     await makeRequest({
       topic: 'plus1',
