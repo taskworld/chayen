@@ -1,7 +1,13 @@
 import _ from 'lodash'
 import request from 'superagent'
 
-async function makeRequest ({ topic, payload, metadata = [], target }) {
+export interface MakeRequestParameters {
+  topic: string
+  payload: any
+  target: string
+}
+
+async function makeRequest ({ topic, payload, target }: MakeRequestParameters) {
   try {
     const result = await request.post(target).send({
       topic,

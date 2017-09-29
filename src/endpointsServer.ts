@@ -3,7 +3,7 @@ import Boom from 'boom'
 import Joi from 'joi'
 import bodyParser from 'body-parser'
 import express from 'express'
-import makeRequest from './makeRequest'
+import makeRequest, { MakeRequestParameters } from './makeRequest'
 
 const app = express()
 
@@ -22,8 +22,7 @@ export async function setupServer (options?: ServerOptions) {
     try {
       const result = await executeEndpoint({
         topic: req.body.topic,
-        payload: req.body.payload,
-        metadata: req.body.metadata || []
+        payload: req.body.payload
       })
       res.json({
         payload: JSON.stringify(result)
@@ -55,15 +54,25 @@ export async function setupServer (options?: ServerOptions) {
 
 const DEFAULT_TIMEOUT = 20000
 
+export interface Delegator {
+  makeDelegateRequestAsync (params: MakeRequestParameters): any
+}
+
 export interface EndpointParameters {
   topic: string
   schemas: Joi.Schema
-  handler: (payload, delegator) => any
   timeout?: number
   opts?: { cache: false | { ttl: number } }
+  handler (payload: any, delegator: Delegator): any
 }
 
-export function createEndpoint ({ topic, schemas, handler, timeout = DEFAULT_TIMEOUT, opts = { cache: false } }: EndpointParameters) {
+export function createEndpoint ({
+  topic,
+  schemas,
+  handler,
+  timeout = DEFAULT_TIMEOUT,
+  opts = { cache: false }
+}: EndpointParameters) {
   if (handlerMap[topic]) throw new Error('endpoint already existed!')
 
   handlerMap[topic] = { schemas, handler, timeout }
@@ -75,7 +84,12 @@ export async function terminateServer () {
   server = null
 }
 
-async function executeEndpoint ({ topic, payload, metadata }) {
+export interface ExecuteEndpointParameters {
+  topic: string
+  payload: any
+}
+
+async function executeEndpoint ({ topic, payload }: ExecuteEndpointParameters) {
   const endpointData = handlerMap[topic]
   const { schemas, handler, timeout } = endpointData
   if (schemas) {
@@ -88,9 +102,8 @@ async function executeEndpoint ({ topic, payload, metadata }) {
   let result
   try {
     const delegator = {
-      makeDelegateRequestAsync: ({ topic, payload, target }) => {
-        metadata.push({ topic, timestamp: new Date().getTime() })
-        return makeRequest({ topic, payload, metadata, target })
+      makeDelegateRequestAsync: ({ topic, payload, target }: MakeRequestParameters) => {
+        return makeRequest({ topic, payload, target })
       }
     }
     result = await Bluebird.try(() => handler(payload, delegator)).timeout(timeout)

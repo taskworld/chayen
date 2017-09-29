@@ -17,7 +17,7 @@ afterEach(async () => {
   await terminateServer()
 })
 
-test('Pass metadata', async () => {
+test('Should delegate request correctly', async () => {
   createEndpoint({
     topic: 'plus3',
     schemas: Joi.object().keys({
