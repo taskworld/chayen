@@ -10,7 +10,7 @@ const app = express()
 
 let server: null | http.Server = null
 
-const handlerMap = {}
+let handlerMap = {}
 
 export interface ServerOptions {}
 
@@ -88,6 +88,7 @@ export function createEndpoint ({
 export async function terminateServer () {
   if (!server) return
   await (server as any).close()
+  handlerMap = {}
   server = null
 }
 
