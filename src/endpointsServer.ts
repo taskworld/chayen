@@ -11,7 +11,9 @@ let server = null
 
 const handlerMap = {}
 
-export async function setupServer (cacheClient = null) {
+export interface ServerOptions {}
+
+export async function setupServer (options?: ServerOptions) {
   if (server) return
 
   app.use(bodyParser.json())
@@ -53,7 +55,15 @@ export async function setupServer (cacheClient = null) {
 
 const DEFAULT_TIMEOUT = 20000
 
-export function createEndpoint ({ topic, schemas, handler, timeout = DEFAULT_TIMEOUT }) {
+export interface EndpointParameters {
+  topic: string
+  schemas: Joi.Schema
+  handler: (payload, delegator) => any
+  timeout?: number
+  opts?: { cache: false | { ttl: number } }
+}
+
+export function createEndpoint ({ topic, schemas, handler, timeout = DEFAULT_TIMEOUT, opts = { cache: false } }: EndpointParameters) {
   if (handlerMap[topic]) throw new Error('endpoint already existed!')
 
   handlerMap[topic] = { schemas, handler, timeout }
@@ -83,7 +93,7 @@ async function executeEndpoint ({ topic, payload, metadata }) {
         return makeRequest({ topic, payload, metadata, target })
       }
     }
-    result = await Bluebird.try(() => handler({ payload }, delegator)).timeout(timeout)
+    result = await Bluebird.try(() => handler(payload, delegator)).timeout(timeout)
   } catch (err) {
     if (err.name === 'TimeoutError') {
       throw Boom.clientTimeout(err.message)

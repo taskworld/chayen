@@ -23,7 +23,7 @@ test('Should throw error when there is an error', async () => {
     schemas: Joi.object().keys({
       number: Joi.number().required()
     }),
-    handler: async ({ payload }) => {
+    handler: async (payload) => {
       throw new Error('Force error')
     }
   })

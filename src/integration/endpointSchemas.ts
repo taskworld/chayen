@@ -23,7 +23,7 @@ test('Should throw on invalid schemas', async () => {
     schemas: Joi.object().keys({
       number: Joi.number().required()
     }),
-    handler: async ({ payload }) => {
+    handler: async (payload) => {
       return payload.number + 1
     }
   })

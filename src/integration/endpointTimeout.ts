@@ -25,7 +25,7 @@ test('Should throw on timeout', async () => {
       number: Joi.number().required()
     }),
     timeout: 100,
-    handler: async ({ payload }) => {
+    handler: async (payload) => {
       await Bluebird.delay(103)
       return payload.number + 1
     }
