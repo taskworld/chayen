@@ -7,8 +7,10 @@ import {
 import Joi from 'joi'
 import makeRequest from '../makeRequest'
 
+let address
+
 beforeEach(async () => {
-  await setupServer()
+  address = await setupServer()
 })
 
 afterEach(async () => {
@@ -24,7 +26,8 @@ test('Pass metadata', async () => {
     handler: async ({ payload }, delegator) => {
       const res = await delegator.makeDelegateRequestAsync({
         topic: 'plus2',
-        payload: payload
+        payload: payload,
+        target: `http://localhost:${address.port}/rpc`
       })
       return res + 1
     }
@@ -36,8 +39,16 @@ test('Pass metadata', async () => {
       number: Joi.number().required()
     }),
     handler: async ({ payload }, delegator) => {
-      const first = await delegator.makeDelegateRequestAsync({ topic: 'plus1', payload: { number: payload.number } })
-      const second = await delegator.makeDelegateRequestAsync({ topic: 'plus1', payload: { number: first } })
+      const first = await delegator.makeDelegateRequestAsync({
+        topic: 'plus1',
+        payload: { number: payload.number },
+        target: `http://localhost:${address.port}/rpc`
+      })
+      const second = await delegator.makeDelegateRequestAsync({
+        topic: 'plus1',
+        payload: { number: first },
+        target: `http://localhost:${address.port}/rpc`
+      })
       return second
     }
   })
@@ -56,7 +67,8 @@ test('Pass metadata', async () => {
     topic: 'plus3',
     payload: {
       number: 2
-    }
+    },
+    target: `http://localhost:${address.port}/rpc`
   })
 
   expect(res).toBe(5)

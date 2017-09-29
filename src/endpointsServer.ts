@@ -11,12 +11,8 @@ let server = null
 
 const handlerMap = {}
 
-export async function setupServer () {
+export async function setupServer (cacheClient = null) {
   if (server) return
-
-  app.get('/', function (req, res) {
-    res.send('Hello World!')
-  })
 
   app.use(bodyParser.json())
 
@@ -31,12 +27,10 @@ export async function setupServer () {
         payload: JSON.stringify(result)
       })
     } catch (err) {
-      if (err.output && err.output.statusCode) {
-        // Boom Error
+      if (err.isBoom) {
         res.status(err.output.statusCode)
         res.send(err)
       } else {
-        // Unexpected error
         res.status(500)
         res.send({
           message: err.message,
@@ -46,14 +40,15 @@ export async function setupServer () {
     }
   })
 
-  await new Promise((resolve) => {
+  const address = await new Promise((resolve) => {
     server = app.listen(function (this: any) {
       const address = this.address()
-      ; (global as any).HACK_PORT = address.port
       console.log(`RPC Setup on port ${address.port}!`)
-      resolve()
+      resolve(address)
     })
   })
+
+  return address
 }
 
 const DEFAULT_TIMEOUT = 20000
@@ -83,9 +78,9 @@ async function executeEndpoint ({ topic, payload, metadata }) {
   let result
   try {
     const delegator = {
-      makeDelegateRequestAsync: ({ topic, payload }) => {
+      makeDelegateRequestAsync: ({ topic, payload, target }) => {
         metadata.push({ topic, timestamp: new Date().getTime() })
-        return makeRequest({ topic, payload, metadata })
+        return makeRequest({ topic, payload, metadata, target })
       }
     }
     result = await Bluebird.try(() => handler({ payload }, delegator)).timeout(timeout)

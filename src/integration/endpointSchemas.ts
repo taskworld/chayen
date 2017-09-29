@@ -7,8 +7,10 @@ import {
 import Joi from 'joi'
 import makeRequest from '../makeRequest'
 
+let address
+
 beforeEach(async () => {
-  await setupServer()
+  address = await setupServer()
 })
 
 afterEach(async () => {
@@ -31,7 +33,8 @@ test('Should throw on invalid schemas', async () => {
       topic: 'plus1',
       payload: {
         numberTypo: 2
-      }
+      },
+      target: `http://localhost:${address.port}/rpc`
     })
     throw new Error('Should throw')
   } catch (err) {
