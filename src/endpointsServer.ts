@@ -3,18 +3,25 @@ import Boom from 'boom'
 import Joi from 'joi'
 import bodyParser from 'body-parser'
 import express from 'express'
+import http from 'http'
 import makeRequest, { MakeRequestParameters } from './makeRequest'
 
 const app = express()
 
-let server = null
+let server: null | http.Server = null
 
 const handlerMap = {}
 
 export interface ServerOptions {}
 
-export async function setupServer (options?: ServerOptions) {
-  if (server) return
+export interface Address {
+  port: number
+  family: string
+  address: string
+}
+
+export async function setupServer (options?: ServerOptions): Promise<Address> {
+  if (server) return server.address()
 
   app.use(bodyParser.json())
 
@@ -41,9 +48,9 @@ export async function setupServer (options?: ServerOptions) {
     }
   })
 
-  const address = await new Promise((resolve) => {
-    server = app.listen(function (this: any) {
-      const address = this.address()
+  const address = await new Promise<Address>(resolve => {
+    server = app.listen(function () {
+      const address = (server as http.Server).address()
       console.log(`RPC Setup on port ${address.port}!`)
       resolve(address)
     })
