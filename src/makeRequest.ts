@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import request from 'superagent'
+import axios from 'axios'
 
 export interface MakeRequestParameters {
   topic: string
@@ -9,16 +9,14 @@ export interface MakeRequestParameters {
 
 async function makeRequest ({ topic, payload, target }: MakeRequestParameters) {
   try {
-    const result = await request.post(target).send({
+    const response = await axios.post(target, {
       topic,
       payload
     })
-    const jsonResponse = JSON.parse(result.text)
-    const jsonPayload = JSON.parse(jsonResponse.payload)
-    return jsonPayload
+    return JSON.parse(response.data.payload)
   } catch (err) {
-    if (err.response && err.response.text) {
-      const errData = JSON.parse(err.response.text)
+    if (err.response && err.response.data) {
+      const errData = err.response.data
       const boomError = _.get(errData, 'output.payload')
       if (boomError) {
         throw boomError
