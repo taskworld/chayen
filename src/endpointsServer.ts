@@ -144,7 +144,7 @@ async function executeEndpoint ({ topic, payload }: { topic: string, payload: an
 
   if (endpoint.cache) {
     try {
-      const cache = await redis.set([ topic, result, 'EX', endpoint.cache.ttl ])
+      await redis.set([ topic, result, 'EX', endpoint.cache.ttl ])
     } catch (err) {
       console.error(err)
     }

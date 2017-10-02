@@ -88,7 +88,7 @@ test('Should return cache when cache is available', async () => {
     }
   })
 
-  const res = await makeRequest({
+  await makeRequest({
     topic: 'file:read:3',
     payload: {},
     target: `http://localhost:${address.port}/rpc`
@@ -96,13 +96,13 @@ test('Should return cache when cache is available', async () => {
 
   fs.writeFileSync(filePath, 'updated_data')
 
-  const res2 = await makeRequest({
+  const res = await makeRequest({
     topic: 'file:read:3',
     payload: {},
     target: `http://localhost:${address.port}/rpc`
   })
 
-  expect(res2).toBe('old_data')
+  expect(res).toBe('old_data')
 })
 
 test('Should not return cache if cache expired', async () => {
@@ -123,7 +123,7 @@ test('Should not return cache if cache expired', async () => {
     }
   })
 
-  const res = await makeRequest({
+  await makeRequest({
     topic: 'file:read:4',
     payload: {},
     target: `http://localhost:${address.port}/rpc`
@@ -133,11 +133,11 @@ test('Should not return cache if cache expired', async () => {
 
   await Bluebird.delay(1100)
 
-  const res2 = await makeRequest({
+  const res = await makeRequest({
     topic: 'file:read:4',
     payload: {},
     target: `http://localhost:${address.port}/rpc`
   })
 
-  expect(res2).toBe('updated_data')
+  expect(res).toBe('updated_data')
 })
