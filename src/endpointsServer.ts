@@ -10,7 +10,7 @@ const app = express()
 
 let server: null | http.Server = null
 
-let handlerMap = {}
+let handlerMap = new Map<String, Endpoint>()
 
 export interface ServerOptions {}
 
@@ -18,6 +18,12 @@ export interface Address {
   port: number
   family: string
   address: string
+}
+
+export interface Endpoint {
+  schema: Joi.Schema
+  timeout: number
+  handler (payload: any, delegator: Delegator): any
 }
 
 export async function setupServer (options?: ServerOptions): Promise<Address> {
@@ -31,9 +37,7 @@ export async function setupServer (options?: ServerOptions): Promise<Address> {
         topic: req.body.topic,
         payload: req.body.payload
       })
-      res.json({
-        payload: JSON.stringify(result)
-      })
+      res.json({ payload: JSON.stringify(result) })
     } catch (err) {
       if (err.isBoom) {
         res.status(err.output.statusCode)
@@ -80,46 +84,38 @@ export function createEndpoint ({
   timeout = DEFAULT_TIMEOUT,
   opts = { cache: false }
 }: EndpointParameters) {
-  if (handlerMap[topic]) throw new Error('endpoint already existed!')
+  if (handlerMap.has(topic)) throw new Error('endpoint already existed!')
 
-  handlerMap[topic] = { schema, handler, timeout }
+  handlerMap.set(topic, { schema, handler, timeout })
 }
 
 export async function terminateServer () {
   if (!server) return
   await (server as any).close()
-  handlerMap = {}
+  handlerMap.clear()
   server = null
 }
 
-export interface ExecuteEndpointParameters {
-  topic: string
-  payload: any
-}
+async function executeEndpoint ({ topic, payload }: { topic: string, payload: any }) {
+  const endpoint = handlerMap.get(topic)
+  if (!endpoint) throw Boom.badRequest('Invalid topic')
 
-async function executeEndpoint ({ topic, payload }: ExecuteEndpointParameters) {
-  const endpointData = handlerMap[topic]
-  const { schema, handler, timeout } = endpointData
+  const { schema, handler, timeout } = endpoint
   if (schema) {
     const v = Joi.validate(payload, schema)
-    if (v.error) {
-      throw Boom.badData('Invalid schema: ', v.error.message)
-    }
+    if (v.error) throw Boom.badData('Invalid schema: ', v.error.message)
     payload = v.value
   }
-  let result
+
   try {
     const delegator = {
       makeDelegateRequestAsync: ({ topic, payload, target }: MakeRequestParameters) => {
         return makeRequest({ topic, payload, target })
       }
     }
-    result = await Bluebird.try(() => handler(payload, delegator)).timeout(timeout)
+    return Bluebird.try(() => handler(payload, delegator)).timeout(timeout)
   } catch (err) {
-    if (err.name === 'TimeoutError') {
-      throw Boom.clientTimeout(err.message)
-    }
+    if (err.name === 'TimeoutError') throw Boom.clientTimeout(err.message)
     throw err
   }
-  return result
 }

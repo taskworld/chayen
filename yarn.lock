@@ -6,6 +6,10 @@
   version "3.5.12"
   resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.12.tgz#180881847ff664e9e294a5dcdcd4c8e9a150e5a7"
 
+"@types/boom@^4.3.7":
+  version "4.3.7"
+  resolved "https://registry.yarnpkg.com/@types/boom/-/boom-4.3.7.tgz#2771d7b1fd7df70c6860ed30ec6752feaca9f3de"
+
 "@types/express-serve-static-core@*":
   version "4.0.53"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.0.53.tgz#1723a35d1447f2c55e13c8721eab3448e42f4d82"
