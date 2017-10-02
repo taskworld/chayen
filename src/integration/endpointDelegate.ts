@@ -1,25 +1,12 @@
-import {
-  createEndpoint,
-  setupServer,
-  terminateServer
-} from '../endpointsServer'
-
 import Joi from 'joi'
+
 import makeRequest from '../makeRequest'
-
-let address
-
-beforeEach(async () => {
-  address = await setupServer()
-})
-
-afterEach(async () => {
-  await terminateServer()
-})
+import Server from '../Server'
 
 test('Should delegate request correctly', async () => {
-  createEndpoint({
-    topic: 'plus3',
+  const server = new Server()
+
+  server.addEndpoint('plus3', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -27,14 +14,13 @@ test('Should delegate request correctly', async () => {
       const res = await delegator.makeDelegateRequestAsync({
         topic: 'plus2',
         payload: payload,
-        target: `http://localhost:${address.port}/rpc`
+        target: `http://localhost:${server.getAddress().port}/rpc`
       })
       return res + 1
     }
   })
 
-  createEndpoint({
-    topic: 'plus2',
+  server.addEndpoint('plus2', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -42,19 +28,18 @@ test('Should delegate request correctly', async () => {
       const first = await delegator.makeDelegateRequestAsync({
         topic: 'plus1',
         payload: { number: payload.number },
-        target: `http://localhost:${address.port}/rpc`
+        target: `http://localhost:${server.getAddress().port}/rpc`
       })
       const second = await delegator.makeDelegateRequestAsync({
         topic: 'plus1',
         payload: { number: first },
-        target: `http://localhost:${address.port}/rpc`
+        target: `http://localhost:${server.getAddress().port}/rpc`
       })
       return second
     }
   })
 
-  createEndpoint({
-    topic: 'plus1',
+  server.addEndpoint('plus1', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -63,13 +48,17 @@ test('Should delegate request correctly', async () => {
     }
   })
 
+  await server.start()
+
   const res = await makeRequest({
     topic: 'plus3',
     payload: {
       number: 2
     },
-    target: `http://localhost:${address.port}/rpc`
+    target: `http://localhost:${server.getAddress().port}/rpc`
   })
 
   expect(res).toBe(5)
+
+  server.terminate()
 })
