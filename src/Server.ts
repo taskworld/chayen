@@ -81,9 +81,16 @@ export default class Server {
     })
   }
 
-  terminate () {
+  async terminate () {
     if (!this.server) return
     this.server.close()
+    if (this.redis) {
+      try {
+        await this.redis.quit()
+      } catch (error) {
+        console.error('Can not quit Redis.', error)
+      }
+    }
     delete this.server
   }
 

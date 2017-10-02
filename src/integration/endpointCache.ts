@@ -31,7 +31,7 @@ test('Should return response normally when redis is not available', async () => 
 
   expect(res).toBe('data')
 
-  server.terminate()
+  await server.terminate()
 })
 
 test('Should return response normally when cache is not found', async () => {
@@ -57,7 +57,7 @@ test('Should return response normally when cache is not found', async () => {
 
   expect(res).toBe('data')
 
-  server.terminate()
+  await server.terminate()
 })
 
 test('Should return cache when cache is available', async () => {
@@ -91,7 +91,7 @@ test('Should return cache when cache is available', async () => {
 
   expect(res).toBe('old_data')
 
-  server.terminate()
+  await server.terminate()
 })
 
 test('Should not return cache if cache expired', async () => {
@@ -127,5 +127,5 @@ test('Should not return cache if cache expired', async () => {
 
   expect(res).toBe('updated_data')
 
-  server.terminate()
+  await server.terminate()
 })

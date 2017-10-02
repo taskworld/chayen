@@ -28,6 +28,6 @@ test('Should throw on invalid schema', async () => {
     expect(err.statusCode).toBe(422)
     expect(err.message.startsWith('Invalid schema')).toBe(true)
   } finally {
-    server.terminate()
+    await server.terminate()
   }
 })

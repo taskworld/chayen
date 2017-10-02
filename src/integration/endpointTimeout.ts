@@ -31,6 +31,6 @@ test('Should throw on timeout', async () => {
     expect(err.statusCode).toBe(408)
     expect(err.error).toBe('Request Time-out')
   } finally {
-    server.terminate()
+    await server.terminate()
   }
 })

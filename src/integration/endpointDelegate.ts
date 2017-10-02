@@ -60,5 +60,5 @@ test('Should delegate request correctly', async () => {
 
   expect(res).toBe(5)
 
-  server.terminate()
+  await server.terminate()
 })
