@@ -5,14 +5,23 @@ import bodyParser from 'body-parser'
 import express from 'express'
 import http from 'http'
 import makeRequest, { MakeRequestParameters } from './makeRequest'
+import Redis, { RedisOptions } from 'ioredis'
 
 const app = express()
 
-let server: null | http.Server = null
-
 let handlerMap = new Map<String, Endpoint>()
+let server: http.Server | null = null
+let redis: Redis.Redis
 
-export interface ServerOptions {}
+export interface ServerConfigs {
+  redis?: RedisServerConfig
+}
+
+export interface RedisServerConfig {
+  host: string
+  port: number
+  options?: RedisOptions
+}
 
 export interface Address {
   port: number
@@ -23,11 +32,16 @@ export interface Address {
 export interface Endpoint {
   schema: Joi.Schema
   timeout: number
+  cache: { ttl: number } | false
   handler (payload: any, delegator: Delegator): any
 }
 
-export async function setupServer (options?: ServerOptions): Promise<Address> {
+export async function setupServer (configs: ServerConfigs = {}): Promise<Address> {
   if (server) return server.address()
+
+  if (configs.redis) {
+    redis = new Redis(configs.redis)
+  }
 
   app.use(bodyParser.json())
 
@@ -86,7 +100,7 @@ export function createEndpoint ({
 }: EndpointParameters) {
   if (handlerMap.has(topic)) throw new Error('endpoint already existed!')
 
-  handlerMap.set(topic, { schema, handler, timeout })
+  handlerMap.set(topic, { schema, handler, timeout, cache: opts.cache })
 }
 
 export async function terminateServer () {
@@ -100,22 +114,41 @@ async function executeEndpoint ({ topic, payload }: { topic: string, payload: an
   const endpoint = handlerMap.get(topic)
   if (!endpoint) throw Boom.badRequest('Invalid topic')
 
-  const { schema, handler, timeout } = endpoint
-  if (schema) {
-    const v = Joi.validate(payload, schema)
+  if (endpoint.schema) {
+    const v = Joi.validate(payload, endpoint.schema)
     if (v.error) throw Boom.badData('Invalid schema: ', v.error.message)
     payload = v.value
   }
 
+  if (endpoint.cache) {
+    try {
+      const cache = await redis.get(topic)
+      if (cache) return cache
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  let result
   try {
     const delegator = {
       makeDelegateRequestAsync: ({ topic, payload, target }: MakeRequestParameters) => {
         return makeRequest({ topic, payload, target })
       }
     }
-    return Bluebird.try(() => handler(payload, delegator)).timeout(timeout)
+    result = await Bluebird.try(() => endpoint.handler(payload, delegator)).timeout(endpoint.timeout)
   } catch (err) {
     if (err.name === 'TimeoutError') throw Boom.clientTimeout(err.message)
     throw err
   }
+
+  if (endpoint.cache) {
+    try {
+      const cache = await redis.set([ topic, result, 'EX', endpoint.cache.ttl ])
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  return result
 }
