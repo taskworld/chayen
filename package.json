@@ -12,6 +12,7 @@
   "author": "Chris Taskworld",
   "license": "ISC",
   "jest": {
+    "testEnvironment": "node",
     "transform": {
       "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
@@ -31,8 +32,7 @@
     "boom": "^6.0.0",
     "express": "^4.16.0",
     "joi": "^11.1.1",
-    "lodash": "^4.17.4",
-    "superagent": "^3.6.1"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.12",
@@ -40,7 +40,6 @@
     "@types/jest": "^21.1.1",
     "@types/joi": "^10.4.3",
     "@types/lodash": "^4.14.76",
-    "@types/superagent": "^3.5.5",
     "chai": "^4.1.2",
     "jest": "^21.2.1",
     "mocha": "^3.5.3",
