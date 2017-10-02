@@ -20,7 +20,7 @@ afterEach(async () => {
 test('Should throw error when there is an error', async () => {
   createEndpoint({
     topic: 'err',
-    schemas: Joi.object().keys({
+    schema: Joi.object().keys({
       number: Joi.number().required()
     }),
     handler: async (payload) => {

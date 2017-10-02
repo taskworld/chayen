@@ -21,7 +21,7 @@ afterEach(async () => {
 test('Should throw on timeout', async () => {
   createEndpoint({
     topic: 'plus1',
-    schemas: Joi.object().keys({
+    schema: Joi.object().keys({
       number: Joi.number().required()
     }),
     timeout: 100,

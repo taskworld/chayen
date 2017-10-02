@@ -20,7 +20,7 @@ afterEach(async () => {
 test('Should delegate request correctly', async () => {
   createEndpoint({
     topic: 'plus3',
-    schemas: Joi.object().keys({
+    schema: Joi.object().keys({
       number: Joi.number().required()
     }),
     handler: async (payload, delegator) => {
@@ -35,7 +35,7 @@ test('Should delegate request correctly', async () => {
 
   createEndpoint({
     topic: 'plus2',
-    schemas: Joi.object().keys({
+    schema: Joi.object().keys({
       number: Joi.number().required()
     }),
     handler: async (payload, delegator) => {
@@ -55,7 +55,7 @@ test('Should delegate request correctly', async () => {
 
   createEndpoint({
     topic: 'plus1',
-    schemas: Joi.object().keys({
+    schema: Joi.object().keys({
       number: Joi.number().required()
     }),
     handler: async (payload) => {

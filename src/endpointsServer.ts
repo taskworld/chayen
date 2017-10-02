@@ -67,7 +67,7 @@ export interface Delegator {
 
 export interface EndpointParameters {
   topic: string
-  schemas: Joi.Schema
+  schema: Joi.Schema
   timeout?: number
   opts?: { cache: false | { ttl: number } }
   handler (payload: any, delegator: Delegator): any
@@ -75,14 +75,14 @@ export interface EndpointParameters {
 
 export function createEndpoint ({
   topic,
-  schemas,
+  schema,
   handler,
   timeout = DEFAULT_TIMEOUT,
   opts = { cache: false }
 }: EndpointParameters) {
   if (handlerMap[topic]) throw new Error('endpoint already existed!')
 
-  handlerMap[topic] = { schemas, handler, timeout }
+  handlerMap[topic] = { schema, handler, timeout }
 }
 
 export async function terminateServer () {
@@ -99,11 +99,11 @@ export interface ExecuteEndpointParameters {
 
 async function executeEndpoint ({ topic, payload }: ExecuteEndpointParameters) {
   const endpointData = handlerMap[topic]
-  const { schemas, handler, timeout } = endpointData
-  if (schemas) {
-    const v = Joi.validate(payload, schemas)
+  const { schema, handler, timeout } = endpointData
+  if (schema) {
+    const v = Joi.validate(payload, schema)
     if (v.error) {
-      throw Boom.badData('Invalid schemas: ', v.error.message)
+      throw Boom.badData('Invalid schema: ', v.error.message)
     }
     payload = v.value
   }

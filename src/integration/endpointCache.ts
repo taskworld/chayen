@@ -19,7 +19,7 @@ test('Should return response normally when redis instance is not available', asy
 
   createEndpoint({
     topic: 'file:read',
-    schemas: Joi.object().keys({}),
+    schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
@@ -48,7 +48,7 @@ test('Should return cache when cache has not been out of date', async () => {
 
   createEndpoint({
     topic: 'file:read',
-    schemas: Joi.object().keys({}),
+    schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
@@ -87,7 +87,7 @@ test('Should not return cache if cache expired', async () => {
 
   createEndpoint({
     topic: 'file:read',
-    schemas: Joi.object().keys({}),
+    schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
