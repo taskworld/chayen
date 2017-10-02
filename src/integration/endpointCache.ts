@@ -19,7 +19,7 @@ afterEach(async () => {
 test('Should return response normally when redis is not available', async () => {
   const address = await setupServer({ redis: { host: 'localhost', port: 555555555 } })
 
-  const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache.txt')
+  const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_1.txt')
 
   fs.writeFileSync(filePath, 'data')
 
@@ -46,7 +46,7 @@ test('Should return response normally when redis is not available', async () => 
 test('Should return response normally when cache is not found', async () => {
   const address = await setupServer(REDIS_SERVER_CONFIG)
 
-  const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache.txt')
+  const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_2.txt')
 
   fs.writeFileSync(filePath, 'old_data')
 
@@ -73,7 +73,7 @@ test('Should return response normally when cache is not found', async () => {
 test('Should return cache when cache is available', async () => {
   const address = await setupServer(REDIS_SERVER_CONFIG)
 
-  const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache.txt')
+  const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_3.txt')
 
   fs.writeFileSync(filePath, 'old_data')
 
@@ -108,7 +108,7 @@ test('Should return cache when cache is available', async () => {
 test('Should not return cache if cache expired', async () => {
   const address = await setupServer(REDIS_SERVER_CONFIG)
 
-  const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache.txt')
+  const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_4.txt')
 
   fs.writeFileSync(filePath, 'old_data')
 
