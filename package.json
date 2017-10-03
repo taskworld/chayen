@@ -1,22 +1,23 @@
 {
   "name": "tw-rpc",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "An RPC framework with so much hype going on. such wow.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "postinstall": "npm run build",
+    "lint": "tslint --project .",
     "test": "jest",
-    "dev": "nodemon ./src/setup",
-    "build": "tsc --project .",
-    "lint": "tslint --project ."
+    "build": "tsc --project ."
   },
-  "author": "Chris Taskworld",
-  "license": "ISC",
+  "author": "Awesome Developers at Taskworld",
+  "license": "MIT",
   "jest": {
     "testEnvironment": "node",
     "transform": {
-      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      "^.+\\.ts$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "testRegex": "(/src/integration/.*)\\.(jsx?|tsx?)$",
+    "testRegex": "/test/.*\\.ts$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -39,7 +40,8 @@
     "express": "^4.16.0",
     "ioredis": "^3.1.4",
     "joi": "^11.1.1",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "typescript": "^2.5.3"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.12",
@@ -52,10 +54,8 @@
     "chai": "^4.1.2",
     "jest": "^21.2.1",
     "mocha": "^3.5.3",
-    "nodemon": "^1.12.1",
     "ts-jest": "^21.0.1",
     "tslint": "^5.7.0",
-    "tslint-config-standard": "^6.0.1",
-    "typescript": "^2.5.3"
+    "tslint-config-standard": "^6.0.1"
   }
 }
