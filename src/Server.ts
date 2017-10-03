@@ -101,7 +101,7 @@ export default class Server {
     if (!endpoint) throw Boom.badRequest('Invalid topic')
 
     if (endpoint.schema) {
-      const v = Joi.validate(payload, endpoint.schema)
+      const v = Joi.validate(payload, endpoint.schema, { stripUnknown: true })
       if (v.error) throw Boom.badData('Invalid schema: ', v.error.message)
       payload = v.value
     }
