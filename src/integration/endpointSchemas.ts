@@ -1,32 +1,19 @@
-import {
-  createEndpoint,
-  setupServer,
-  terminateServer
-} from '../endpointsServer'
-
 import Joi from 'joi'
+
 import makeRequest from '../makeRequest'
+import Server from '../Server'
 
-let address
-
-beforeEach(async () => {
-  address = await setupServer()
-})
-
-afterEach(async () => {
-  await terminateServer()
-})
-
-test('Should throw on invalid schemas', async () => {
-  createEndpoint({
-    topic: 'plus1',
-    schemas: Joi.object().keys({
+test('Should throw on invalid schema', async () => {
+  const server = new Server()
+  server.addEndpoint('plus1', {
+    schema: Joi.object().keys({
       number: Joi.number().required()
     }),
     handler: async (payload) => {
       return payload.number + 1
     }
   })
+  await server.start()
 
   try {
     await makeRequest({
@@ -34,11 +21,13 @@ test('Should throw on invalid schemas', async () => {
       payload: {
         numberTypo: 2
       },
-      target: `http://localhost:${address.port}/rpc`
+      target: `http://localhost:${server.getAddress().port}/rpc`
     })
     throw new Error('Should throw')
   } catch (err) {
     expect(err.statusCode).toBe(422)
-    expect(err.message.startsWith('Invalid schemas')).toBe(true)
+    expect(err.message.startsWith('Invalid schema')).toBe(true)
+  } finally {
+    await server.terminate()
   }
 })
