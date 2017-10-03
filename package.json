@@ -33,6 +33,7 @@
     }
   },
   "dependencies": {
+    "@types/node": "^8.0.31",
     "axios": "^0.16.2",
     "bluebird": "^3.5.0",
     "body-parser": "^1.18.2",
