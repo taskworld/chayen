@@ -1,27 +1,13 @@
-import {
-  createEndpoint,
-  setupServer,
-  terminateServer
-} from '../endpointsServer'
-
 import Bluebird from 'bluebird'
 import Joi from 'joi'
+
 import makeRequest from '../makeRequest'
-
-let address
-
-beforeEach(async () => {
-  address = await setupServer()
-})
-
-afterEach(async () => {
-  await terminateServer()
-})
+import Server from '../Server'
 
 test('Should throw on timeout', async () => {
-  createEndpoint({
-    topic: 'plus1',
-    schemas: Joi.object().keys({
+  const server = new Server()
+  server.addEndpoint('plus1', {
+    schema: Joi.object().keys({
       number: Joi.number().required()
     }),
     timeout: 100,
@@ -30,6 +16,7 @@ test('Should throw on timeout', async () => {
       return payload.number + 1
     }
   })
+  await server.start()
 
   try {
     await makeRequest({
@@ -37,11 +24,13 @@ test('Should throw on timeout', async () => {
       payload: {
         number: 2
       },
-      target: `http://localhost:${address.port}/rpc`
+      target: `http://localhost:${server.getAddress().port}/rpc`
     })
     throw new Error('Should timeout')
   } catch (err) {
     expect(err.statusCode).toBe(408)
     expect(err.error).toBe('Request Time-out')
+  } finally {
+    await server.terminate()
   }
 })

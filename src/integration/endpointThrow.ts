@@ -1,32 +1,20 @@
-import {
-  createEndpoint,
-  setupServer,
-  terminateServer
-} from '../endpointsServer'
-
+import Boom from 'boom'
 import Joi from 'joi'
+
 import makeRequest from '../makeRequest'
+import Server from '../Server'
 
-let address
-
-beforeEach(async () => {
-  address = await setupServer()
-})
-
-afterEach(async () => {
-  await terminateServer()
-})
-
-test('Should throw error when there is an error', async () => {
-  createEndpoint({
-    topic: 'err',
-    schemas: Joi.object().keys({
+test('Should hide message and respond with 500 if server error', async () => {
+  const server = new Server()
+  server.addEndpoint('err', {
+    schema: Joi.object().keys({
       number: Joi.number().required()
     }),
     handler: async (payload) => {
       throw new Error('Force error')
     }
   })
+  await server.start()
 
   try {
     await makeRequest({
@@ -34,9 +22,40 @@ test('Should throw error when there is an error', async () => {
       payload: {
         number: 2
       },
-      target: `http://localhost:${address.port}/rpc`
+      target: `http://localhost:${server.getAddress().port}/rpc`
     })
   } catch (err) {
-    expect(err.message).toBe('Force error')
+    expect(err.statusCode).toBe(500)
+    expect(err.message).toBe('An internal server error occurred')
+  } finally {
+    await server.terminate()
+  }
+})
+
+test('Should not hide boom error throw by handler', async () => {
+  const server = new Server()
+  server.addEndpoint('err', {
+    schema: Joi.object().keys({
+      number: Joi.number().required()
+    }),
+    handler: async (payload) => {
+      throw Boom.conflict('There is a conflict')
+    }
+  })
+  await server.start()
+
+  try {
+    await makeRequest({
+      topic: 'err',
+      payload: {
+        number: 2
+      },
+      target: `http://localhost:${server.getAddress().port}/rpc`
+    })
+  } catch (err) {
+    expect(err.statusCode).toBe(409)
+    expect(err.message).toBe('There is a conflict')
+  } finally {
+    await server.terminate()
   }
 })
