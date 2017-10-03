@@ -1,8 +1,10 @@
 import Bluebird from 'bluebird'
 import Joi from 'joi'
 
-import makeRequest from '../../src/makeRequest'
-import Server from '../../src/Server'
+import {
+  Server,
+  makeRequest
+} from '../../src'
 
 test('Should throw on timeout', async () => {
   const server = new Server()

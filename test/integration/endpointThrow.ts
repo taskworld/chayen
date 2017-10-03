@@ -1,8 +1,10 @@
 import Boom from 'boom'
 import Joi from 'joi'
 
-import makeRequest from '../../src/makeRequest'
-import Server from '../../src/Server'
+import {
+  Server,
+  makeRequest
+} from '../../src'
 
 test('Should hide message and respond with 500 if server error', async () => {
   const server = new Server()

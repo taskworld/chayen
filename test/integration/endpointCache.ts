@@ -4,8 +4,10 @@ import path from 'path'
 import Bluebird from 'bluebird'
 import Joi from 'joi'
 
-import makeRequest from '../../src/makeRequest'
-import Server from '../../src/Server'
+import {
+  Server,
+  makeRequest
+} from '../../src'
 
 const SERVER_CONFIG = { redis: { host: 'localhost', port: 6379 } }
 
