@@ -1,5 +1,5 @@
 {
-  "name": "tw-rpc",
+  "name": "chayen",
   "version": "0.1.0",
   "description": "An RPC framework with so much hype going on. such wow.",
   "main": "dist/index.js",
