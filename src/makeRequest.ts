@@ -13,7 +13,7 @@ async function makeRequest ({ topic, payload, target }: MakeRequestParameters) {
       topic,
       payload
     })
-    return JSON.parse(response.data.payload)
+    return response.data.payload
   } catch (err) {
     if (err.response && err.response.data) {
       const errData = err.response.data

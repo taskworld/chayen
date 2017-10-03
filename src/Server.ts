@@ -44,7 +44,7 @@ export default class Server {
     this.app.post('/rpc', async (req, res) => {
       try {
         const result = await this.executeEndpoint(req.body.topic, req.body.payload)
-        res.json({ payload: JSON.stringify(result) })
+        res.json({ payload: result })
       } catch (err) {
         const boomError = Boom.boomify(err, { override: false })
         res.status(boomError.output.statusCode)
