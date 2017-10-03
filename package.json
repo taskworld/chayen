@@ -1,18 +1,17 @@
 {
   "name": "tw-rpc",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "An RPC framework with so much hype going on. such wow.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "postinstall": "npm run build",
     "lint": "tslint --project .",
     "test": "jest",
-    "build": "tsc --project .",
-    "dev": "nodemon ./src/setup"
+    "build": "tsc --project"
   },
   "author": "Awesome Developers at Taskworld",
-  "license": "ISC",
+  "license": "MIT",
   "jest": {
     "testEnvironment": "node",
     "transform": {
@@ -55,7 +54,6 @@
     "chai": "^4.1.2",
     "jest": "^21.2.1",
     "mocha": "^3.5.3",
-    "nodemon": "^1.12.1",
     "ts-jest": "^21.0.1",
     "tslint": "^5.7.0",
     "tslint-config-standard": "^6.0.1"
