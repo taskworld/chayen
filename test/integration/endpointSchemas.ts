@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
-import makeRequest from '../makeRequest'
-import Server from '../Server'
+import makeRequest from '../../src/makeRequest'
+import Server from '../../src/Server'
 
 test('Should throw on invalid schema', async () => {
   const server = new Server()

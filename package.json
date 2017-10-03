@@ -2,21 +2,23 @@
   "name": "tw-rpc",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "prepublishOnly": "npm run build",
+    "lint": "tslint --project .",
     "test": "jest",
-    "dev": "nodemon ./src/setup",
     "build": "tsc --project .",
-    "lint": "tslint --project ."
+    "dev": "nodemon ./src/setup"
   },
-  "author": "Chris Taskworld",
+  "author": "Awesome Developers at Taskworld",
   "license": "ISC",
   "jest": {
     "testEnvironment": "node",
     "transform": {
-      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      "^.+\\.ts$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "testRegex": "(/src/integration/.*)\\.(jsx?|tsx?)$",
+    "testRegex": "/test/.*\\.ts$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
