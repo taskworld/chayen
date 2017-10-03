@@ -8,7 +8,7 @@
     "postinstall": "npm run build",
     "lint": "tslint --project .",
     "test": "jest",
-    "build": "tsc --project"
+    "build": "tsc --project ."
   },
   "author": "Awesome Developers at Taskworld",
   "license": "MIT",
