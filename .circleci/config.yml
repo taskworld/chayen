@@ -1,34 +1,12 @@
 version: 2
 jobs:
-  lint:
+  lint_test_build:
     docker:
       - image: kkarczmarczyk/node-yarn:8.0
+      - image: redis/latest
     steps:
       - checkout
       - run: yarn
       - run: yarn lint
-  test:
-    docker:
-      - image: kkarczmarczyk/node-yarn:8.0
-    steps:
-      - checkout
-      - run: yarn
       - run: yarn test
-  build:
-    docker:
-      - image: kkarczmarczyk/node-yarn:8.0
-    steps:
-      - checkout
-      - run: yarn
       - run: yarn build
-workflows:
-  version: 2
-  test_and_build:
-    jobs:
-      - lint
-      - test:
-          requires:
-            - lint
-      - build:
-          requires:
-            - lint
