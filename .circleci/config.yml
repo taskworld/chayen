@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  lint_test_build:
+  build:
     docker:
       - image: kkarczmarczyk/node-yarn:8.0
       - image: redis/latest
