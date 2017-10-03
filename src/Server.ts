@@ -106,7 +106,7 @@ export default class Server {
       payload = v.value
     }
 
-    if (endpoint.cache) {
+    if (this.redis && endpoint.cache) {
       try {
         const cache = await this.redis.get(topic)
         if (cache) return cache
@@ -130,7 +130,7 @@ export default class Server {
       throw err
     }
 
-    if (endpoint.cache) {
+    if (this.redis && endpoint.cache) {
       try {
         await this.redis.set([topic, result, 'EX', endpoint.cache.ttl])
       } catch (err) {
