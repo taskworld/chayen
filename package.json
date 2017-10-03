@@ -51,6 +51,7 @@
     "@types/jest": "^21.1.1",
     "@types/joi": "^10.4.3",
     "@types/lodash": "^4.14.76",
+    "@types/node": "^8.0.31",
     "chai": "^4.1.2",
     "jest": "^21.2.1",
     "mocha": "^3.5.3",
