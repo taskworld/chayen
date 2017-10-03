@@ -1,13 +1,13 @@
-import fs from 'fs'
-import path from 'path'
+import * as fs from 'fs'
+import * as path from 'path'
 
-import Bluebird from 'bluebird'
-import Joi from 'joi'
+import * as Bluebird from 'bluebird'
+import * as Joi from 'joi'
 
 import {
   Server,
   makeRequest
-} from '../../src'
+} from '../../dist'
 
 const SERVER_CONFIG = { redis: { host: 'localhost', port: 6379 } }
 

@@ -1,10 +1,10 @@
-import Bluebird from 'bluebird'
-import Joi from 'joi'
+import * as Bluebird from 'bluebird'
+import * as Joi from 'joi'
 
 import {
   Server,
   makeRequest
-} from '../../src'
+} from '../../dist'
 
 test('Should throw on timeout', async () => {
   const server = new Server()

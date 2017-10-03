@@ -1,10 +1,11 @@
-import Bluebird from 'bluebird'
-import Boom from 'boom'
-import Joi from 'joi'
-import bodyParser from 'body-parser'
-import express from 'express'
-import http from 'http'
-import Redis, { RedisOptions } from 'ioredis'
+import * as http from 'http'
+
+import * as Bluebird from 'bluebird'
+import * as bodyParser from 'body-parser'
+import * as Boom from 'boom'
+import * as express from 'express'
+import * as Redis from 'ioredis'
+import * as Joi from 'joi'
 
 import makeRequest, { MakeRequestParameters } from './makeRequest'
 
@@ -17,7 +18,7 @@ export interface ServerConfigs {
 export interface RedisServerConfig {
   host: string
   port: number
-  options?: RedisOptions
+  options?: Redis.RedisOptions
 }
 
 export interface Endpoint {

@@ -1,9 +1,9 @@
-import Joi from 'joi'
+import * as Joi from 'joi'
 
 import {
   Server,
   makeRequest
-} from '../../src'
+} from '../../dist'
 
 test('Should delegate request correctly', async () => {
   const server = new Server()

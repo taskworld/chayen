@@ -7,7 +7,7 @@
   "scripts": {
     "postinstall": "npm run build",
     "lint": "tslint --project .",
-    "test": "jest",
+    "test": "npm run build && jest",
     "build": "tsc --project ."
   },
   "author": "Awesome Developers at Taskworld",
