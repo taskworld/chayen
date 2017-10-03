@@ -1,7 +1,9 @@
 import Joi from 'joi'
 
-import makeRequest from '../../src/makeRequest'
-import Server from '../../src/Server'
+import {
+  Server,
+  makeRequest
+} from '../../src'
 
 test('Should delegate request correctly', async () => {
   const server = new Server()

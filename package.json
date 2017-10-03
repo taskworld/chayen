@@ -1,5 +1,5 @@
 {
-  "name": "tw-rpc",
+  "name": "chayen",
   "version": "0.1.0",
   "description": "An RPC framework with so much hype going on. such wow.",
   "main": "dist/index.js",
@@ -37,7 +37,7 @@
     "bluebird": "^3.5.0",
     "body-parser": "^1.18.2",
     "boom": "^6.0.0",
-    "express": "^4.16.0",
+    "express": "^4.16.1",
     "ioredis": "^3.1.4",
     "joi": "^11.1.1",
     "lodash": "^4.17.4",
@@ -51,9 +51,7 @@
     "@types/jest": "^21.1.1",
     "@types/joi": "^10.4.3",
     "@types/lodash": "^4.14.76",
-    "chai": "^4.1.2",
     "jest": "^21.2.1",
-    "mocha": "^3.5.3",
     "ts-jest": "^21.0.1",
     "tslint": "^5.7.0",
     "tslint-config-standard": "^6.0.1"

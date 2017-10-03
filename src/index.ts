@@ -1,7 +1,2 @@
-import makeRequest, { MakeRequestParameters } from './makeRequest' // tslint:disable-line:no-unused-variable
-import Server from './Server'
-
-export default {
-  makeRequest,
-  Server
-}
+export { default as makeRequest } from './makeRequest'
+export { default as Server } from './Server'
