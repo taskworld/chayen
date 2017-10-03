@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: kkarczmarczyk/node-yarn:8.0
-      - image: redis/latest
+      - image: redis:latest
     steps:
       - checkout
       - run: yarn
