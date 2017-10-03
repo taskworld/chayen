@@ -80,11 +80,14 @@ export default class Server {
     if (this.server) return null
 
     return new Promise<http.Server>(resolve => {
-      this.server = this.app.listen(this.port || (Math.random() * 10000) + 50000, () => {
-        const address = this.server.address()
+      const serverCallback = function (this) {
+        const address = this.address()
         console.log(`RPC Setup on port ${address.port}!`)
-        resolve(this.server)
-      })
+        resolve(this)
+      }
+      this.server = this.port
+        ? this.app.listen(this.port, serverCallback)
+        : this.app.listen(serverCallback)
     })
   }
 
