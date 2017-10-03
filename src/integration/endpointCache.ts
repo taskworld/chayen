@@ -1,4 +1,4 @@
-import Bluebird from 'Bluebird'
+import Bluebird from 'bluebird'
 import fs from 'fs'
 import Joi from 'joi'
 import path from 'path'
