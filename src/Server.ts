@@ -12,6 +12,7 @@ import makeRequest, { MakeRequestParameters } from './makeRequest'
 const DEFAULT_TIMEOUT = 20000
 
 export interface ServerConfigs {
+  port?: number
   redis?: RedisServerConfig
 }
 
@@ -35,6 +36,7 @@ export interface Delegator {
 export default class Server {
   private app: express.Express
   private redis: Redis.Redis
+  private port: number
   private endpoints: Map<string, Endpoint>
   private server: http.Server
 
@@ -56,6 +58,10 @@ export default class Server {
       this.redis = new Redis(configs.redis)
     }
 
+    if (configs.port) {
+      this.port = configs.port
+    }
+
     this.endpoints = new Map<string, Endpoint>()
   }
 
@@ -74,7 +80,7 @@ export default class Server {
     if (this.server) return null
 
     return new Promise<http.Server>(resolve => {
-      this.server = this.app.listen(() => {
+      this.server = this.app.listen(this.port || (Math.random() * 10000) + 50000, () => {
         const address = this.server.address()
         console.log(`RPC Setup on port ${address.port}!`)
         resolve(this.server)
