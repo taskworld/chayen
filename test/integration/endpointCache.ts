@@ -9,12 +9,12 @@ import {
   makeRequest
 } from '../../dist'
 
-const SERVER_CONFIG = { redis: { host: 'localhost', port: 6379 } }
+const SERVER_CONFIG = { redisUrl: 'redis://127.0.0.1:6379' }
 
 test('Should return response normally when redis is not available', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_1.txt')
 
-  const server = new Server({ redis: { host: 'localhost', port: 555555555 } })
+  const server = new Server({ redisUrl: 'redis://127.0.0.1:555555555' })
   server.addEndpoint('test:file:read:1', {
     schema: Joi.object().keys({}),
     handler: async () => {

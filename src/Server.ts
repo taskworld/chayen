@@ -14,13 +14,7 @@ const DEFAULT_TIMEOUT = 20000
 
 export interface ServerConfigs {
   port?: number
-  redis?: RedisServerConfig
-}
-
-export interface RedisServerConfig {
-  host: string
-  port: number
-  options?: Redis.RedisOptions
+  redisUrl?: string
 }
 
 export interface Endpoint {
@@ -55,8 +49,8 @@ export default class Server {
       }
     })
 
-    if (configs.redis) {
-      this.redis = new Redis(configs.redis)
+    if (configs.redisUrl) {
+      this.redis = new Redis(configs.redisUrl)
     }
 
     if (configs.port) {
