@@ -15,7 +15,7 @@ test('Should return response normally when redis is not available', async () => 
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_1.txt')
 
   const server = new Server({ redis: { host: 'localhost', port: 555555555 } })
-  server.addEndpoint('file:read:1', {
+  server.addEndpoint('test:file:read:1', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
@@ -26,11 +26,11 @@ test('Should return response normally when redis is not available', async () => 
 
   fs.writeFileSync(filePath, 'data')
 
-  const res = await makeRequest({
-    topic: 'file:read:1',
-    payload: {},
-    target: `http://localhost:${server.getAddress().port}/rpc`
-  })
+  const res = await makeRequest(
+    'test:file:read:1',
+    {},
+    `http://localhost:${server.getAddress().port}/rpc`
+  )
 
   expect(res).toBe('data')
 
@@ -41,7 +41,7 @@ test('Should return response normally when cache is not found', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_2.txt')
 
   const server = new Server(SERVER_CONFIG)
-  server.addEndpoint('file:read:2', {
+  server.addEndpoint('test:file:read:2', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
@@ -52,11 +52,11 @@ test('Should return response normally when cache is not found', async () => {
 
   fs.writeFileSync(filePath, 'data')
 
-  const res = await makeRequest({
-    topic: 'file:read:2',
-    payload: {},
-    target: `http://localhost:${server.getAddress().port}/rpc`
-  })
+  const res = await makeRequest(
+    'test:file:read:2',
+    {},
+    `http://localhost:${server.getAddress().port}/rpc`
+  )
 
   expect(res).toBe('data')
 
@@ -67,7 +67,7 @@ test('Should return cache when cache is available', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_3.txt')
 
   const server = new Server(SERVER_CONFIG)
-  server.addEndpoint('file:read:3', {
+  server.addEndpoint('test:file:read:3', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
@@ -78,19 +78,19 @@ test('Should return cache when cache is available', async () => {
 
   fs.writeFileSync(filePath, 'old_data')
 
-  await makeRequest({
-    topic: 'file:read:3',
-    payload: {},
-    target: `http://localhost:${server.getAddress().port}/rpc`
-  })
+  await makeRequest(
+    'test:file:read:3',
+    {},
+    `http://localhost:${server.getAddress().port}/rpc`
+  )
 
   fs.writeFileSync(filePath, 'updated_data')
 
-  const res = await makeRequest({
-    topic: 'file:read:3',
-    payload: {},
-    target: `http://localhost:${server.getAddress().port}/rpc`
-  })
+  const res = await makeRequest(
+    'test:file:read:3',
+    {},
+    `http://localhost:${server.getAddress().port}/rpc`
+  )
 
   expect(res).toBe('old_data')
 
@@ -112,21 +112,21 @@ test('Should not return cache if cache expired', async () => {
 
   fs.writeFileSync(filePath, 'old_data')
 
-  await makeRequest({
-    topic: 'file:read:4',
-    payload: {},
-    target: `http://localhost:${server.getAddress().port}/rpc`
-  })
+  await makeRequest(
+    'file:read:4',
+    {},
+    `http://localhost:${server.getAddress().port}/rpc`
+  )
 
   fs.writeFileSync(filePath, 'updated_data')
 
   await Bluebird.delay(1100)
 
-  const res = await makeRequest({
-    topic: 'file:read:4',
-    payload: {},
-    target: `http://localhost:${server.getAddress().port}/rpc`
-  })
+  const res = await makeRequest(
+    'file:read:4',
+    {},
+    `http://localhost:${server.getAddress().port}/rpc`
+  )
 
   expect(res).toBe('updated_data')
 

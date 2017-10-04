@@ -8,7 +8,7 @@ import * as Redis from 'ioredis'
 import * as Joi from 'joi'
 import * as hash from 'object-hash'
 
-import makeRequest, { MakeRequestParameters } from './makeRequest'
+import makeRequest from './makeRequest'
 
 const DEFAULT_TIMEOUT = 20000
 
@@ -31,7 +31,7 @@ export interface Endpoint {
 }
 
 export interface Delegator {
-  makeDelegateRequestAsync (params: MakeRequestParameters): any
+  makeDelegateRequestAsync (topic: string, payload: any, target: string): any
 }
 
 export default class Server {
@@ -128,8 +128,8 @@ export default class Server {
     let result
     try {
       const delegator = {
-        makeDelegateRequestAsync: ({ topic, payload, target }: MakeRequestParameters) => {
-          return makeRequest({ topic, payload, target })
+        makeDelegateRequestAsync: (topic: string, payload: any, target: string) => {
+          return makeRequest(topic, payload, target)
         }
       }
       result = await Bluebird
