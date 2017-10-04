@@ -6,6 +6,7 @@ import * as Boom from 'boom'
 import * as express from 'express'
 import * as Redis from 'ioredis'
 import * as Joi from 'joi'
+import * as hash from 'object-hash'
 
 import makeRequest, { MakeRequestParameters } from './makeRequest'
 
@@ -117,7 +118,7 @@ export default class Server {
 
     if (this.redis && endpoint.cache) {
       try {
-        const cache = await this.redis.get(JSON.stringify({ topic, payload }))
+        const cache = await this.redis.get(_getCacheKey(topic, payload))
         if (cache) return JSON.parse(cache).v
       } catch (err) {
         console.error(err)
@@ -141,7 +142,7 @@ export default class Server {
 
     if (this.redis && endpoint.cache) {
       try {
-        const key = JSON.stringify({ topic, payload })
+        const key = _getCacheKey(topic, payload)
         const value = JSON.stringify({ v: result })
         await this.redis.set([key, value, 'EX', endpoint.cache.ttl])
       } catch (err) {
@@ -151,4 +152,8 @@ export default class Server {
 
     return result
   }
+}
+
+function _getCacheKey (topic: string, payload: any) {
+  return `${process.env.NODE_ENV}::chayen::cache::${topic}::${hash({topic, payload})}`
 }
