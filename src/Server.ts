@@ -118,7 +118,7 @@ export default class Server {
     if (this.redis && endpoint.cache) {
       try {
         const cache = await this.redis.get(topic)
-        if (cache) return cache
+        if (cache) return JSON.parse(cache).v
       } catch (err) {
         console.error(err)
       }
@@ -141,7 +141,7 @@ export default class Server {
 
     if (this.redis && endpoint.cache) {
       try {
-        await this.redis.set([topic, result, 'EX', endpoint.cache.ttl])
+        await this.redis.set([topic, JSON.stringify({ v: result }), 'EX', endpoint.cache.ttl])
       } catch (err) {
         console.error(err)
       }
