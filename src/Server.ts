@@ -141,7 +141,9 @@ export default class Server {
 
     if (this.redis && endpoint.cache) {
       try {
-        await this.redis.set([topic, JSON.stringify({ v: result }), 'EX', endpoint.cache.ttl])
+        const key = JSON.stringify({ topic, payload })
+        const value = JSON.stringify({ v: result })
+        await this.redis.set([key, value, 'EX', endpoint.cache.ttl])
       } catch (err) {
         console.error(err)
       }
