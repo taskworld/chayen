@@ -117,7 +117,7 @@ export default class Server {
 
     if (this.redis && endpoint.cache) {
       try {
-        const cache = await this.redis.get(topic)
+        const cache = await this.redis.get(JSON.stringify({ topic, payload }))
         if (cache) return JSON.parse(cache).v
       } catch (err) {
         console.error(err)
