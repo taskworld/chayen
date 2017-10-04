@@ -1,13 +1,10 @@
 import * as Boom from 'boom'
 import * as Joi from 'joi'
 
-import {
-  Server,
-  makeRequest
-} from '../../dist'
+import Chayen from '../../dist'
 
 test('Should hide message and respond with 500 if server error', async () => {
-  const server = new Server()
+  const server = new Chayen.Server()
   server.addEndpoint('test:throw:error', {
     schema: Joi.object().keys({
       number: Joi.number().required()
@@ -19,7 +16,7 @@ test('Should hide message and respond with 500 if server error', async () => {
   await server.start()
 
   try {
-    await makeRequest(
+    await Chayen.makeRequest(
       'test:throw:error',
       { number: 2 },
       `http://localhost:${server.getAddress().port}/rpc`
@@ -34,7 +31,7 @@ test('Should hide message and respond with 500 if server error', async () => {
 })
 
 test('Should not hide boom error throw by handler', async () => {
-  const server = new Server()
+  const server = new Chayen.Server()
   server.addEndpoint('test:throw:boom', {
     schema: Joi.object().keys({
       number: Joi.number().required()
@@ -46,7 +43,7 @@ test('Should not hide boom error throw by handler', async () => {
   await server.start()
 
   try {
-    await makeRequest(
+    await Chayen.makeRequest(
       'test:throw:boom',
       { number: 2 },
       `http://localhost:${server.getAddress().port}/rpc`

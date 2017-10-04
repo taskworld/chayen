@@ -1,12 +1,9 @@
 import * as Joi from 'joi'
 
-import {
-  Server,
-  makeRequest
-} from '../../dist'
+import Chayen from '../../dist'
 
 test('Should delegate request correctly', async () => {
-  const server = new Server()
+  const server = new Chayen.Server()
 
   server.addEndpoint('test:delegate:plus3', {
     schema: Joi.object().keys({
@@ -49,10 +46,10 @@ test('Should delegate request correctly', async () => {
       return payload.number + 1
     }
   })
-  
+
   await server.start()
 
-  const res = await makeRequest(
+  const res = await Chayen.makeRequest(
     'test:delegate:plus3',
     { number: 2 },
     `http://localhost:${server.getAddress().port}/rpc`

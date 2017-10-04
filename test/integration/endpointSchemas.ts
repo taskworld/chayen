@@ -1,12 +1,9 @@
 import * as Joi from 'joi'
 
-import {
-  Server,
-  makeRequest
-} from '../../dist'
+import Chayen from '../../dist'
 
 test('Should throw on invalid schema', async () => {
-  const server = new Server()
+  const server = new Chayen.Server()
   server.addEndpoint('test:plus1', {
     schema: Joi.object().keys({
       number: Joi.number().required()
@@ -18,7 +15,7 @@ test('Should throw on invalid schema', async () => {
   await server.start()
 
   try {
-    await makeRequest(
+    await Chayen.makeRequest(
       'test:plus1',
       { numberTypo: 2 },
       `http://localhost:${server.getAddress().port}/rpc`
@@ -33,7 +30,7 @@ test('Should throw on invalid schema', async () => {
 })
 
 test('Should strip unknown field when validate schema', async () => {
-  const server = new Server()
+  const server = new Chayen.Server()
   server.addEndpoint('test:plus1', {
     schema: Joi.object().keys({
       number: Joi.number().required()
@@ -44,7 +41,7 @@ test('Should strip unknown field when validate schema', async () => {
   })
   await server.start()
 
-  const res = await makeRequest(
+  const res = await Chayen.makeRequest(
     'test:plus1',
     { number: 2, unknown: 5555555 },
     `http://localhost:${server.getAddress().port}/rpc`

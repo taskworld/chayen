@@ -1,13 +1,10 @@
 import * as Bluebird from 'bluebird'
 import * as Joi from 'joi'
 
-import {
-  Server,
-  makeRequest
-} from '../../dist'
+import Chayen from '../../dist'
 
 test('Should throw on timeout', async () => {
-  const server = new Server()
+  const server = new Chayen.Server()
   server.addEndpoint('test:timeout:plus1', {
     schema: Joi.object().keys({
       number: Joi.number().required()
@@ -21,7 +18,7 @@ test('Should throw on timeout', async () => {
   await server.start()
 
   try {
-    await makeRequest(
+    await Chayen.makeRequest(
       'test:timeout:plus1', { number: 2 },
       `http://localhost:${server.getAddress().port}/rpc`
     )
