@@ -5,3 +5,9 @@ yarn-error.log*
 node_modules/
 
 .DS_Store
+
+.circleci/
+.vscode/
+src/
+test/
+tslint.json
