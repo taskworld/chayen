@@ -1,11 +1,13 @@
 import * as http from 'http'
 
 import * as Bluebird from 'bluebird'
-import * as bodyParser from 'body-parser'
 import * as Boom from 'boom'
-import * as express from 'express'
 import * as Redis from 'ioredis'
 import * as Joi from 'joi'
+import * as Koa from 'koa'
+import * as bodyParser from 'koa-bodyparser'
+import * as Router from 'koa-router'
+import * as _ from 'lodash'
 import * as hash from 'object-hash'
 
 import makeRequest from './makeRequest'
@@ -29,25 +31,33 @@ export interface Delegator {
 }
 
 export default class Server {
-  private app: express.Express
+  private app: Koa
+  private router: Router
   private redis: Redis.Redis
   private port: number
   private endpoints: Map<string, Endpoint>
   private server: http.Server
 
   constructor (configs: ServerConfigs = {}) {
-    this.app = express()
-    this.app.use(bodyParser.json())
-    this.app.post('/rpc', async (req, res) => {
+    this.app = new Koa()
+    this.app.use(bodyParser({
+      enableTypes: [ 'json' ]
+    }))
+
+    this.router = new Router()
+
+    this.router.post('/rpc', async (ctx, next) => {
       try {
-        const result = await this.executeEndpoint(req.body.topic, req.body.payload)
-        res.json({ payload: result })
+        const result = await this.executeEndpoint(ctx.request.body.topic, ctx.request.body.payload)
+        ctx.body = { payload: result }
       } catch (err) {
         const boomError = Boom.boomify(err, { override: false })
-        res.status(boomError.output.statusCode)
-        res.send(boomError)
+        ctx.status = boomError.output.statusCode
+        ctx.body = boomError
       }
     })
+
+    this.app.use(this.router.routes())
 
     if (configs.redisUrl) {
       this.redis = new Redis(configs.redisUrl)

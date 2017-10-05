@@ -24,8 +24,8 @@ test('Should throw on timeout', async () => {
     )
     throw new Error('Should timeout')
   } catch (err) {
-    expect(err.statusCode).toBe(408)
-    expect(err.error).toBe('Request Time-out')
+    expect(err.output.statusCode).toBe(408)
+    expect(err.message).toBe('operation timed out')
   } finally {
     await server.terminate()
   }
