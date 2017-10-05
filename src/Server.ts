@@ -7,7 +7,6 @@ import * as Joi from 'joi'
 import * as Koa from 'koa'
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import * as _ from 'lodash'
 import * as hash from 'object-hash'
 
 import makeRequest from './makeRequest'
