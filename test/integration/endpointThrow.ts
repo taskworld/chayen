@@ -1,7 +1,7 @@
 import * as Boom from 'boom'
 import * as Joi from 'joi'
 
-import Chayen from '../../dist'
+import * as Chayen from '../../dist'
 
 test('Should hide message and respond with 500 if server error', async () => {
   const server = new Chayen.Server()

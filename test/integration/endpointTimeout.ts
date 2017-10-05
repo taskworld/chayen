@@ -1,7 +1,7 @@
 import * as Bluebird from 'bluebird'
 import * as Joi from 'joi'
 
-import Chayen from '../../dist'
+import * as Chayen from '../../dist'
 
 test('Should throw on timeout', async () => {
   const server = new Chayen.Server()

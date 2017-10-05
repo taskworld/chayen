@@ -4,10 +4,9 @@ import * as path from 'path'
 import * as Bluebird from 'bluebird'
 import * as Joi from 'joi'
 
-import Chayen from '../../dist'
+import * as Chayen from '../../dist'
 
 const SERVER_CONFIG = { redisUrl: 'redis://127.0.0.1:6379' }
-
 test('Should return response normally when redis is not available', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_1.txt')
 

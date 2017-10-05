@@ -1,6 +1,6 @@
 import * as Joi from 'joi'
 
-import Chayen from '../../dist'
+import * as Chayen from '../../dist'
 
 test('Should throw on invalid schema', async () => {
   const server = new Chayen.Server()
