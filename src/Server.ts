@@ -21,7 +21,7 @@ export interface ServerConfigs {
 export interface Endpoint {
   schema: Joi.Schema
   timeout?: number
-  cache?: { ttl: number }
+  cache?: { ttl: number, limit?: number }
   handler (payload: any, delegator: Delegator): any
 }
 
@@ -97,7 +97,6 @@ export default class Server {
 
   async terminate () {
     if (!this.server) return
-    this.server.close()
     if (this.redis) {
       try {
         await this.redis.quit()
@@ -105,6 +104,7 @@ export default class Server {
         console.error('Can not quit Redis.', error)
       }
     }
+    this.server.close()
     delete this.server
   }
 
@@ -120,9 +120,21 @@ export default class Server {
     }
 
     if (this.redis && endpoint.cache) {
+      const cacheKey = _getCacheKey(topic, payload)
       try {
-        const cache = await this.redis.get(_getCacheKey(topic, payload))
-        if (cache) return JSON.parse(cache).v
+        if (endpoint.cache.limit) {
+          const cacheCount = await this.redis.incr(`${cacheKey}::count`)
+          if (cacheCount === 1) {
+            await this.redis.expire(`${cacheKey}::count`, endpoint.cache.ttl)
+          }
+          if (cacheCount >= endpoint.cache.limit) {
+            const cache = await this.redis.get(cacheKey)
+            if (cache) return JSON.parse(cache).v
+          }
+        } else {
+          const cache = await this.redis.get(cacheKey)
+          if (cache) return JSON.parse(cache).v
+        }
       } catch (err) {
         console.error(err)
       }
@@ -158,5 +170,5 @@ export default class Server {
 }
 
 function _getCacheKey (topic: string, payload: any) {
-  return `${process.env.NODE_ENV}::chayen::cache::${topic}::${hash({topic, payload})}`
+  return `${process.env.NODE_ENV}::chayen::cache::${topic}::${hash({ topic, payload })}`
 }
