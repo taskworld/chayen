@@ -123,9 +123,7 @@ export default class Server {
       if (cacheCount === 1) {
         await this.redis.expire(`${cacheKey}::count`, cacheOption.ttl)
       }
-      if (cacheCount > cacheOption.limit) {
-        return true
-      }
+      return cacheCount > cacheOption.limit
     } catch (err) {
       console.error(err)
     }
