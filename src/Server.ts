@@ -113,12 +113,11 @@ export default class Server {
     delete this.server
   }
 
-  private async shouldReturnCache (cache: Cache | false | undefined, topic: string, payload: object) {
+  private async shouldReturnCache (cache: Cache | false | undefined, cacheKey: string) {
     if (!this.redis || !cache) return false
 
     if (!cache.limit) return true
 
-    const cacheKey = _getCacheKey(topic, payload)
     try {
       const cacheCount = await this.redis.incr(`${cacheKey}::count`)
       if (cacheCount === 1) {
@@ -144,9 +143,10 @@ export default class Server {
       payload = v.value
     }
 
-    if (await this.shouldReturnCache(endpoint.cache, topic, payload)) {
+    const cacheKey = _getCacheKey(topic, payload)
+    if (await this.shouldReturnCache(endpoint.cache, cacheKey)) {
       try {
-        const cache = await this.redis.get(_getCacheKey(topic, payload))
+        const cache = await this.redis.get(cacheKey)
         if (cache) return JSON.parse(cache).v
       } catch (err) {
         console.error(err)
@@ -170,9 +170,8 @@ export default class Server {
 
     if (this.redis && endpoint.cache) {
       try {
-        const key = _getCacheKey(topic, payload)
         const value = JSON.stringify({ v: result })
-        await this.redis.set([key, value, 'EX', endpoint.cache.ttl])
+        await this.redis.set([cacheKey, value, 'EX', endpoint.cache.ttl])
       } catch (err) {
         console.error(err)
       }
