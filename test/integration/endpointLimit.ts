@@ -9,10 +9,10 @@ import * as Chayen from '../../dist'
 const SERVER_CONFIG = { redisUrl: 'redis://127.0.0.1:6379' }
 
 test('Should return normal response when request not exceed limit', async () => {
-  const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_1.txt')
+  const filePath = path.join(__dirname, 'TEST_FILES', 'test_limit_1.txt')
 
   const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:file:read:1', {
+  server.addEndpoint('test:limit:file:read:1', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
@@ -22,7 +22,7 @@ test('Should return normal response when request not exceed limit', async () => 
   await server.start()
 
   const makeRequestToFileRead1 = async () => Chayen.makeRequest(
-    'test:file:read:1',
+    'test:limit:file:read:1',
     {},
     `http://localhost:${server.getAddress().port}/rpc`
   )
@@ -42,10 +42,10 @@ test('Should return normal response when request not exceed limit', async () => 
 })
 
 test('Should return cache if request exceed limit', async () => {
-  const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_2.txt')
+  const filePath = path.join(__dirname, 'TEST_FILES', 'test_limit_2.txt')
 
   const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:file:read:2', {
+  server.addEndpoint('test:limit:file:read:2', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
@@ -55,7 +55,7 @@ test('Should return cache if request exceed limit', async () => {
   await server.start()
 
   const makeRequestToFileRead2 = async () => Chayen.makeRequest(
-    'test:file:read:2',
+    'test:limit:file:read:2',
     {},
     `http://localhost:${server.getAddress().port}/rpc`
   )
@@ -75,10 +75,10 @@ test('Should return cache if request exceed limit', async () => {
 })
 
 test('Should return normal response limit window has ended', async () => {
-  const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_3.txt')
+  const filePath = path.join(__dirname, 'TEST_FILES', 'test_limit_3.txt')
 
   const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:file:read:3', {
+  server.addEndpoint('test:limit:file:read:3', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
@@ -88,7 +88,7 @@ test('Should return normal response limit window has ended', async () => {
   await server.start()
 
   const makeRequestToFileRead3 = async () => Chayen.makeRequest(
-    'test:file:read:3',
+    'test:limit:file:read:3',
     {},
     `http://localhost:${server.getAddress().port}/rpc`
   )

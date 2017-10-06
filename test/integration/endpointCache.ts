@@ -12,7 +12,7 @@ test('Should return response normally when redis is not available', async () => 
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_1.txt')
 
   const server = new Chayen.Server({ redisUrl: 'redis://127.0.0.1:555555555' })
-  server.addEndpoint('test:file:read:1', {
+  server.addEndpoint('test:cache:file:read:1', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
@@ -24,7 +24,7 @@ test('Should return response normally when redis is not available', async () => 
   fs.writeFileSync(filePath, 'data')
 
   const res = await Chayen.makeRequest(
-    'test:file:read:1',
+    'test:cache:file:read:1',
     {},
     `http://localhost:${server.getAddress().port}/rpc`
   )
@@ -38,7 +38,7 @@ test('Should return response normally when cache is not found and no limit speci
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_2.txt')
 
   const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:file:read:2', {
+  server.addEndpoint('test:cache:file:read:2', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
@@ -50,7 +50,7 @@ test('Should return response normally when cache is not found and no limit speci
   fs.writeFileSync(filePath, 'data')
 
   const res = await Chayen.makeRequest(
-    'test:file:read:2',
+    'test:cache:file:read:2',
     {},
     `http://localhost:${server.getAddress().port}/rpc`
   )
@@ -64,7 +64,7 @@ test('Should return cache when cache is available and no limit specified', async
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_3.txt')
 
   const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:file:read:3', {
+  server.addEndpoint('test:cache:file:read:3', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
@@ -76,7 +76,7 @@ test('Should return cache when cache is available and no limit specified', async
   fs.writeFileSync(filePath, 'old_data')
 
   await Chayen.makeRequest(
-    'test:file:read:3',
+    'test:cache:file:read:3',
     {},
     `http://localhost:${server.getAddress().port}/rpc`
   )
@@ -84,7 +84,7 @@ test('Should return cache when cache is available and no limit specified', async
   fs.writeFileSync(filePath, 'updated_data')
 
   const res = await Chayen.makeRequest(
-    'test:file:read:3',
+    'test:cache:file:read:3',
     {},
     `http://localhost:${server.getAddress().port}/rpc`
   )
@@ -98,7 +98,7 @@ test('Should not return cache if cache expired and no limit specified', async ()
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_4.txt')
 
   const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:file:read:4', {
+  server.addEndpoint('test:cache:file:read:4', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
@@ -110,7 +110,7 @@ test('Should not return cache if cache expired and no limit specified', async ()
   fs.writeFileSync(filePath, 'old_data')
 
   await Chayen.makeRequest(
-    'test:file:read:4',
+    'test:cache:file:read:4',
     {},
     `http://localhost:${server.getAddress().port}/rpc`
   )
@@ -120,7 +120,7 @@ test('Should not return cache if cache expired and no limit specified', async ()
   await Bluebird.delay(1100)
 
   const res = await Chayen.makeRequest(
-    'test:file:read:4',
+    'test:cache:file:read:4',
     {},
     `http://localhost:${server.getAddress().port}/rpc`
   )
