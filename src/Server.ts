@@ -18,7 +18,7 @@ export interface ServerConfigs {
   redisUrl?: string
 }
 
-export interface Cache {
+export interface CacheOption {
   ttl: number
   limit?: number
 }
@@ -26,7 +26,7 @@ export interface Cache {
 export interface Endpoint {
   schema: Joi.Schema
   timeout?: number
-  cache?: Cache | false
+  cacheOption?: CacheOption | false
   handler (payload: any, delegator: Delegator): any
 }
 
@@ -113,17 +113,17 @@ export default class Server {
     delete this.server
   }
 
-  private async shouldReturnCache (cache: Cache | false | undefined, cacheKey: string) {
-    if (!this.redis || !cache) return false
+  private async shouldReturnCache (cacheOption: CacheOption | false | undefined, cacheKey: string) {
+    if (!this.redis || !cacheOption) return false
 
-    if (!cache.limit) return true
+    if (!cacheOption.limit) return true
 
     try {
       const cacheCount = await this.redis.incr(`${cacheKey}::count`)
       if (cacheCount === 1) {
-        await this.redis.expire(`${cacheKey}::count`, cache.ttl)
+        await this.redis.expire(`${cacheKey}::count`, cacheOption.ttl)
       }
-      if (cacheCount > cache.limit) {
+      if (cacheCount > cacheOption.limit) {
         return true
       }
     } catch (err) {
@@ -144,7 +144,7 @@ export default class Server {
     }
 
     const cacheKey = _getCacheKey(topic, payload)
-    if (await this.shouldReturnCache(endpoint.cache, cacheKey)) {
+    if (await this.shouldReturnCache(endpoint.cacheOption, cacheKey)) {
       try {
         const cache = await this.redis.get(cacheKey)
         if (cache) return JSON.parse(cache).v
@@ -168,10 +168,10 @@ export default class Server {
       throw err
     }
 
-    if (this.redis && endpoint.cache) {
+    if (this.redis && endpoint.cacheOption) {
       try {
         const value = JSON.stringify({ v: result })
-        await this.redis.set([cacheKey, value, 'EX', endpoint.cache.ttl])
+        await this.redis.set([cacheKey, value, 'EX', endpoint.cacheOption.ttl])
       } catch (err) {
         console.error(err)
       }

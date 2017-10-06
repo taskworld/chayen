@@ -17,7 +17,7 @@ test('Should return response normally when redis is not available', async () => 
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
-    cache: { ttl: 10 }
+    cacheOption: { ttl: 10 }
   })
   await server.start()
 
@@ -43,7 +43,7 @@ test('Should return response normally when cache is not found and no limit speci
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
-    cache: { ttl: 10 }
+    cacheOption: { ttl: 10 }
   })
   await server.start()
 
@@ -69,7 +69,7 @@ test('Should return cache when cache is available and no limit specified', async
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
-    cache: { ttl: 10 }
+    cacheOption: { ttl: 10 }
   })
   await server.start()
 
@@ -103,7 +103,7 @@ test('Should not return cache if cache expired and no limit specified', async ()
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
-    cache: { ttl: 1 }
+    cacheOption: { ttl: 1 }
   })
   await server.start()
 
