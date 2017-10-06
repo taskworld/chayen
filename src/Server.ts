@@ -45,7 +45,7 @@ export default class Server {
 
     this.router = new Router()
 
-    this.router.post('/rpc', async (ctx, next) => {
+    this.router.post('/rpc', async ctx => {
       try {
         const result = await this.executeEndpoint(ctx.request.body.topic, ctx.request.body.payload)
         ctx.body = { payload: result }
