@@ -23,7 +23,7 @@ test('Should hide message and respond with 500 if server error', async () => {
     )
     throw new Error('Should reject this')
   } catch (err) {
-    expect(err.statusCode).toBe(500)
+    expect(err.output.statusCode).toBe(500)
     expect(err.message).toBe('An internal server error occurred')
   } finally {
     await server.terminate()
@@ -50,7 +50,7 @@ test('Should not hide boom error throw by handler', async () => {
     )
     throw new Error('Should reject this')
   } catch (err) {
-    expect(err.statusCode).toBe(409)
+    expect(err.output.statusCode).toBe(409)
     expect(err.message).toBe('There is a conflict')
   } finally {
     await server.terminate()
