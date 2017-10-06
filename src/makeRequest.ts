@@ -1,19 +1,13 @@
-import _ from 'lodash'
 import axios from 'axios'
+import * as _ from 'lodash'
 
-export interface MakeRequestParameters {
-  topic: string
-  payload: any
-  target: string
-}
-
-async function makeRequest ({ topic, payload, target }: MakeRequestParameters) {
+async function makeRequest (topic: string, payload: any, target: string) {
   try {
     const response = await axios.post(target, {
       topic,
       payload
     })
-    return JSON.parse(response.data.payload)
+    return response.data.payload
   } catch (err) {
     if (err.response && err.response.data) {
       const errData = err.response.data

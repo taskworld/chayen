@@ -1,23 +1,20 @@
-import Bluebird from 'bluebird'
-import Boom from 'boom'
-import Joi from 'joi'
-import bodyParser from 'body-parser'
-import express from 'express'
-import http from 'http'
-import Redis, { RedisOptions } from 'ioredis'
+import * as http from 'http'
 
-import makeRequest, { MakeRequestParameters } from './makeRequest'
+import * as Bluebird from 'bluebird'
+import * as bodyParser from 'body-parser'
+import * as Boom from 'boom'
+import * as express from 'express'
+import * as Redis from 'ioredis'
+import * as Joi from 'joi'
+import * as hash from 'object-hash'
+
+import makeRequest from './makeRequest'
 
 const DEFAULT_TIMEOUT = 20000
 
 export interface ServerConfigs {
-  redis?: RedisServerConfig
-}
-
-export interface RedisServerConfig {
-  host: string
-  port: number
-  options?: RedisOptions
+  port?: number
+  redisUrl?: string
 }
 
 export interface Endpoint {
@@ -28,12 +25,13 @@ export interface Endpoint {
 }
 
 export interface Delegator {
-  makeDelegateRequestAsync (params: MakeRequestParameters): any
+  makeDelegateRequestAsync (topic: string, payload: any, target: string): any
 }
 
 export default class Server {
   private app: express.Express
   private redis: Redis.Redis
+  private port: number
   private endpoints: Map<string, Endpoint>
   private server: http.Server
 
@@ -43,7 +41,7 @@ export default class Server {
     this.app.post('/rpc', async (req, res) => {
       try {
         const result = await this.executeEndpoint(req.body.topic, req.body.payload)
-        res.json({ payload: JSON.stringify(result) })
+        res.json({ payload: result })
       } catch (err) {
         const boomError = Boom.boomify(err, { override: false })
         res.status(boomError.output.statusCode)
@@ -51,8 +49,12 @@ export default class Server {
       }
     })
 
-    if (configs.redis) {
-      this.redis = new Redis(configs.redis)
+    if (configs.redisUrl) {
+      this.redis = new Redis(configs.redisUrl)
+    }
+
+    if (configs.port) {
+      this.port = configs.port
     }
 
     this.endpoints = new Map<string, Endpoint>()
@@ -73,11 +75,14 @@ export default class Server {
     if (this.server) return null
 
     return new Promise<http.Server>(resolve => {
-      this.server = this.app.listen(() => {
-        const address = this.server.address()
+      const serverCallback = function (this) {
+        const address = this.address()
         console.log(`RPC Setup on port ${address.port}!`)
-        resolve(this.server)
-      })
+        resolve(this)
+      }
+      this.server = this.port
+        ? this.app.listen(this.port, serverCallback)
+        : this.app.listen(serverCallback)
     })
   }
 
@@ -100,15 +105,15 @@ export default class Server {
     if (!endpoint) throw Boom.badRequest('Invalid topic')
 
     if (endpoint.schema) {
-      const v = Joi.validate(payload, endpoint.schema)
+      const v = Joi.validate(payload, endpoint.schema, { stripUnknown: true })
       if (v.error) throw Boom.badData('Invalid schema: ', v.error.message)
       payload = v.value
     }
 
-    if (endpoint.cache) {
+    if (this.redis && endpoint.cache) {
       try {
-        const cache = await this.redis.get(topic)
-        if (cache) return cache
+        const cache = await this.redis.get(_getCacheKey(topic, payload))
+        if (cache) return JSON.parse(cache).v
       } catch (err) {
         console.error(err)
       }
@@ -117,8 +122,8 @@ export default class Server {
     let result
     try {
       const delegator = {
-        makeDelegateRequestAsync: ({ topic, payload, target }: MakeRequestParameters) => {
-          return makeRequest({ topic, payload, target })
+        makeDelegateRequestAsync: (topic: string, payload: any, target: string) => {
+          return makeRequest(topic, payload, target)
         }
       }
       result = await Bluebird
@@ -129,9 +134,11 @@ export default class Server {
       throw err
     }
 
-    if (endpoint.cache) {
+    if (this.redis && endpoint.cache) {
       try {
-        await this.redis.set([topic, result, 'EX', endpoint.cache.ttl])
+        const key = _getCacheKey(topic, payload)
+        const value = JSON.stringify({ v: result })
+        await this.redis.set([key, value, 'EX', endpoint.cache.ttl])
       } catch (err) {
         console.error(err)
       }
@@ -139,4 +146,8 @@ export default class Server {
 
     return result
   }
+}
+
+function _getCacheKey (topic: string, payload: any) {
+  return `${process.env.NODE_ENV}::chayen::cache::${topic}::${hash({topic, payload})}`
 }

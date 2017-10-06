@@ -1,14 +1,11 @@
-import Boom from 'boom'
-import Joi from 'joi'
+import * as Boom from 'boom'
+import * as Joi from 'joi'
 
-import {
-  Server,
-  makeRequest
-} from '../../src'
+import * as Chayen from '../../dist'
 
 test('Should hide message and respond with 500 if server error', async () => {
-  const server = new Server()
-  server.addEndpoint('err', {
+  const server = new Chayen.Server()
+  server.addEndpoint('test:throw:error', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -19,13 +16,12 @@ test('Should hide message and respond with 500 if server error', async () => {
   await server.start()
 
   try {
-    await makeRequest({
-      topic: 'err',
-      payload: {
-        number: 2
-      },
-      target: `http://localhost:${server.getAddress().port}/rpc`
-    })
+    await Chayen.makeRequest(
+      'test:throw:error',
+      { number: 2 },
+      `http://localhost:${server.getAddress().port}/rpc`
+    )
+    throw new Error('Should reject this')
   } catch (err) {
     expect(err.statusCode).toBe(500)
     expect(err.message).toBe('An internal server error occurred')
@@ -35,8 +31,8 @@ test('Should hide message and respond with 500 if server error', async () => {
 })
 
 test('Should not hide boom error throw by handler', async () => {
-  const server = new Server()
-  server.addEndpoint('err', {
+  const server = new Chayen.Server()
+  server.addEndpoint('test:throw:boom', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -47,13 +43,12 @@ test('Should not hide boom error throw by handler', async () => {
   await server.start()
 
   try {
-    await makeRequest({
-      topic: 'err',
-      payload: {
-        number: 2
-      },
-      target: `http://localhost:${server.getAddress().port}/rpc`
-    })
+    await Chayen.makeRequest(
+      'test:throw:boom',
+      { number: 2 },
+      `http://localhost:${server.getAddress().port}/rpc`
+    )
+    throw new Error('Should reject this')
   } catch (err) {
     expect(err.statusCode).toBe(409)
     expect(err.message).toBe('There is a conflict')

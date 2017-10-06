@@ -1,14 +1,11 @@
-import Bluebird from 'bluebird'
-import Joi from 'joi'
+import * as Bluebird from 'bluebird'
+import * as Joi from 'joi'
 
-import {
-  Server,
-  makeRequest
-} from '../../src'
+import * as Chayen from '../../dist'
 
 test('Should throw on timeout', async () => {
-  const server = new Server()
-  server.addEndpoint('plus1', {
+  const server = new Chayen.Server()
+  server.addEndpoint('test:timeout:plus1', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -21,13 +18,10 @@ test('Should throw on timeout', async () => {
   await server.start()
 
   try {
-    await makeRequest({
-      topic: 'plus1',
-      payload: {
-        number: 2
-      },
-      target: `http://localhost:${server.getAddress().port}/rpc`
-    })
+    await Chayen.makeRequest(
+      'test:timeout:plus1', { number: 2 },
+      `http://localhost:${server.getAddress().port}/rpc`
+    )
     throw new Error('Should timeout')
   } catch (err) {
     expect(err.statusCode).toBe(408)
