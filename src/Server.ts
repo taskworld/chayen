@@ -18,10 +18,15 @@ export interface ServerConfigs {
   redisUrl?: string
 }
 
+export interface Cache {
+  ttl: number
+  limit?: number
+}
+
 export interface Endpoint {
   schema: Joi.Schema
   timeout?: number
-  cache?: { ttl: number, limit?: number }
+  cache?: Cache | false
   handler (payload: any, delegator: Delegator): any
 }
 
@@ -108,6 +113,26 @@ export default class Server {
     delete this.server
   }
 
+  private async shouldReturnCache (cache: Cache | false | undefined, topic: string, payload: object) {
+    if (!this.redis || !cache) return false
+
+    if (!cache.limit) return true
+
+    const cacheKey = _getCacheKey(topic, payload)
+    try {
+      const cacheCount = await this.redis.incr(`${cacheKey}::count`)
+      if (cacheCount === 1) {
+        await this.redis.expire(`${cacheKey}::count`, cache.ttl)
+      }
+      if (cacheCount >= cache.limit) {
+        return true
+      }
+    } catch (err) {
+      console.error(err)
+    }
+    return false
+  }
+
   private async executeEndpoint (topic: string, payload: object) {
     const endpoint = this.endpoints.get(topic)
 
@@ -119,22 +144,10 @@ export default class Server {
       payload = v.value
     }
 
-    if (this.redis && endpoint.cache) {
-      const cacheKey = _getCacheKey(topic, payload)
+    if (await this.shouldReturnCache(endpoint.cache, topic, payload)) {
       try {
-        if (endpoint.cache.limit) {
-          const cacheCount = await this.redis.incr(`${cacheKey}::count`)
-          if (cacheCount === 1) {
-            await this.redis.expire(`${cacheKey}::count`, endpoint.cache.ttl)
-          }
-          if (cacheCount >= endpoint.cache.limit) {
-            const cache = await this.redis.get(cacheKey)
-            if (cache) return JSON.parse(cache).v
-          }
-        } else {
-          const cache = await this.redis.get(cacheKey)
-          if (cache) return JSON.parse(cache).v
-        }
+        const cache = await this.redis.get(_getCacheKey(topic, payload))
+        if (cache) return JSON.parse(cache).v
       } catch (err) {
         console.error(err)
       }
