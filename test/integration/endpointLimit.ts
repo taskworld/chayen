@@ -17,7 +17,7 @@ test('Should return normal response when request not exceed limit', async () => 
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
-    cache: { ttl: 5, limit: 5 }
+    cache: { ttl: 5, limit: 3 }
   })
   await server.start()
 
@@ -50,7 +50,7 @@ test('Should return cache if request exceed limit', async () => {
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
-    cache: { ttl: 5, limit: 3 }
+    cache: { ttl: 5, limit: 2 }
   })
   await server.start()
 
