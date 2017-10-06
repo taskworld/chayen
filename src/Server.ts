@@ -18,10 +18,15 @@ export interface ServerConfigs {
   redisUrl?: string
 }
 
+export interface CacheOption {
+  ttl: number
+  limit?: number
+}
+
 export interface Endpoint {
   schema: Joi.Schema
   timeout?: number
-  cache?: { ttl: number }
+  cacheOption?: CacheOption | false
   handler (payload: any, delegator: Delegator): any
 }
 
@@ -97,7 +102,6 @@ export default class Server {
 
   async terminate () {
     if (!this.server) return
-    this.server.close()
     if (this.redis) {
       try {
         await this.redis.quit()
@@ -105,7 +109,25 @@ export default class Server {
         console.error('Can not quit Redis.', error)
       }
     }
+    this.server.close()
     delete this.server
+  }
+
+  private async shouldReturnCache (cacheOption: CacheOption | false | undefined, cacheKey: string) {
+    if (!this.redis || !cacheOption) return false
+
+    if (!cacheOption.limit) return true
+
+    try {
+      const cacheCount = await this.redis.incr(`${cacheKey}::count`)
+      if (cacheCount === 1) {
+        await this.redis.expire(`${cacheKey}::count`, cacheOption.ttl)
+      }
+      return cacheCount > cacheOption.limit
+    } catch (err) {
+      console.error(err)
+    }
+    return false
   }
 
   private async executeEndpoint (topic: string, payload: object) {
@@ -119,9 +141,10 @@ export default class Server {
       payload = v.value
     }
 
-    if (this.redis && endpoint.cache) {
+    const cacheKey = _getCacheKey(topic, payload)
+    if (await this.shouldReturnCache(endpoint.cacheOption, cacheKey)) {
       try {
-        const cache = await this.redis.get(_getCacheKey(topic, payload))
+        const cache = await this.redis.get(cacheKey)
         if (cache) return JSON.parse(cache).v
       } catch (err) {
         console.error(err)
@@ -143,11 +166,10 @@ export default class Server {
       throw err
     }
 
-    if (this.redis && endpoint.cache) {
+    if (this.redis && endpoint.cacheOption) {
       try {
-        const key = _getCacheKey(topic, payload)
         const value = JSON.stringify({ v: result })
-        await this.redis.set([key, value, 'EX', endpoint.cache.ttl])
+        await this.redis.set([cacheKey, value, 'EX', endpoint.cacheOption.ttl])
       } catch (err) {
         console.error(err)
       }
@@ -158,5 +180,5 @@ export default class Server {
 }
 
 function _getCacheKey (topic: string, payload: any) {
-  return `${process.env.NODE_ENV}::chayen::cache::${topic}::${hash({topic, payload})}`
+  return `${process.env.NODE_ENV}::chayen::cache::${topic}::${hash({ topic, payload })}`
 }
