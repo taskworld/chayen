@@ -11,7 +11,6 @@ export interface CacheOption {
 }
 
 export interface Endpoint {
-  topic: string
   schema: Joi.Schema
   timeout?: number
   cacheOption?: CacheOption | false

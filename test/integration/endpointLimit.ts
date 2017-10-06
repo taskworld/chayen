@@ -11,14 +11,17 @@ const SERVER_CONFIG = { redisUrl: 'redis://127.0.0.1:6379' }
 test('Should return normal response when request not exceed limit', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_limit_1.txt')
 
-  const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:limit:file:read:1', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:limit:file:read:1', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
     cacheOption: { ttl: 5, limit: 3 }
   })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
   await server.start()
 
   const makeRequestToFileRead1 = async () => Chayen.makeRequest(
@@ -44,14 +47,17 @@ test('Should return normal response when request not exceed limit', async () => 
 test('Should return cache if request exceed limit', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_limit_2.txt')
 
-  const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:limit:file:read:2', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:limit:file:read:2', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
     cacheOption: { ttl: 5, limit: 2 }
   })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
   await server.start()
 
   const makeRequestToFileRead2 = async () => Chayen.makeRequest(
@@ -77,14 +83,17 @@ test('Should return cache if request exceed limit', async () => {
 test('Should return normal response limit window has ended', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_limit_3.txt')
 
-  const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:limit:file:read:3', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:limit:file:read:3', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
     cacheOption: { ttl: 1, limit: 2 }
   })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
   await server.start()
 
   const makeRequestToFileRead3 = async () => Chayen.makeRequest(

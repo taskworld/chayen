@@ -3,9 +3,9 @@ import * as Joi from 'joi'
 import * as Chayen from '../../dist'
 
 test('Should delegate request correctly', async () => {
-  const server = new Chayen.Server()
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
 
-  server.addEndpoint('test:delegate:plus3', {
+  endpointMapBuilder.addEndpoint('test:delegate:plus3', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -19,7 +19,7 @@ test('Should delegate request correctly', async () => {
     }
   })
 
-  server.addEndpoint('test:delegate:plus2', {
+  endpointMapBuilder.addEndpoint('test:delegate:plus2', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -38,7 +38,7 @@ test('Should delegate request correctly', async () => {
     }
   })
 
-  server.addEndpoint('test:delegate:plus1', {
+  endpointMapBuilder.addEndpoint('test:delegate:plus1', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -47,6 +47,7 @@ test('Should delegate request correctly', async () => {
     }
   })
 
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap())
   await server.start()
 
   const res = await Chayen.makeRequest(

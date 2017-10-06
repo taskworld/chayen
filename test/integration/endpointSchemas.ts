@@ -3,8 +3,9 @@ import * as Joi from 'joi'
 import * as Chayen from '../../dist'
 
 test('Should throw on invalid schema', async () => {
-  const server = new Chayen.Server()
-  server.addEndpoint('test:plus1', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:plus1', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -12,6 +13,8 @@ test('Should throw on invalid schema', async () => {
       return payload.number + 1
     }
   })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap())
   await server.start()
 
   try {
@@ -30,8 +33,9 @@ test('Should throw on invalid schema', async () => {
 })
 
 test('Should strip unknown field when validate schema', async () => {
-  const server = new Chayen.Server()
-  server.addEndpoint('test:plus1', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:plus1', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -39,6 +43,8 @@ test('Should strip unknown field when validate schema', async () => {
       return payload.number + 1
     }
   })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap())
   await server.start()
 
   const res = await Chayen.makeRequest(

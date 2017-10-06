@@ -11,13 +11,18 @@ const SERVER_CONFIG = { redisUrl: 'redis://127.0.0.1:6379' }
 test('Should return response normally when redis is not available', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_1.txt')
 
-  const server = new Chayen.Server({ redisUrl: 'redis://127.0.0.1:555555555' })
-  server.addEndpoint('test:cache:file:read:1', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:cache:file:read:1', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
     cacheOption: { ttl: 10 }
+  })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), {
+    redisUrl: 'redis://127.0.0.1:555555555'
   })
   await server.start()
 
@@ -37,14 +42,17 @@ test('Should return response normally when redis is not available', async () => 
 test('Should return response normally when cache is not found and no limit specified', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_2.txt')
 
-  const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:cache:file:read:2', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:cache:file:read:2', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
     cacheOption: { ttl: 10 }
   })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
   await server.start()
 
   fs.writeFileSync(filePath, 'data')
@@ -63,14 +71,17 @@ test('Should return response normally when cache is not found and no limit speci
 test('Should return cache when cache is available and no limit specified', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_3.txt')
 
-  const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:cache:file:read:3', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:cache:file:read:3', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
     cacheOption: { ttl: 10 }
   })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
   await server.start()
 
   fs.writeFileSync(filePath, 'old_data')
@@ -97,14 +108,17 @@ test('Should return cache when cache is available and no limit specified', async
 test('Should not return cache if cache expired and no limit specified', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_4.txt')
 
-  const server = new Chayen.Server(SERVER_CONFIG)
-  server.addEndpoint('test:cache:file:read:4', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:cache:file:read:4', {
     schema: Joi.object().keys({}),
     handler: async () => {
       return fs.readFileSync(filePath, 'utf8')
     },
     cacheOption: { ttl: 1 }
   })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
   await server.start()
 
   fs.writeFileSync(filePath, 'old_data')

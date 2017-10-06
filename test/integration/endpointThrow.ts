@@ -4,8 +4,9 @@ import * as Joi from 'joi'
 import * as Chayen from '../../dist'
 
 test('Should hide message and respond with 500 if server error', async () => {
-  const server = new Chayen.Server()
-  server.addEndpoint('test:throw:error', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:throw:error', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -13,6 +14,8 @@ test('Should hide message and respond with 500 if server error', async () => {
       throw new Error('Force error')
     }
   })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap())
   await server.start()
 
   try {
@@ -31,8 +34,9 @@ test('Should hide message and respond with 500 if server error', async () => {
 })
 
 test('Should not hide boom error throw by handler', async () => {
-  const server = new Chayen.Server()
-  server.addEndpoint('test:throw:boom', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:throw:boom', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -40,6 +44,8 @@ test('Should not hide boom error throw by handler', async () => {
       throw Boom.conflict('There is a conflict')
     }
   })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap())
   await server.start()
 
   try {

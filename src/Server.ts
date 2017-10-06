@@ -23,10 +23,10 @@ export default class Server {
   private router: Router
   private redis: Redis.Redis
   private port: number
-  private endpoints: Map<string, Endpoint>
+  private endpointMap: Map<string, Endpoint>
   private server: http.Server
 
-  constructor (configs: ServerConfigs = {}) {
+  constructor (endpointMap: Map<string, Endpoint>, configs: ServerConfigs = {}) {
     this.app = new Koa()
     this.app.use(bodyParser({
       enableTypes: [ 'json' ]
@@ -54,18 +54,12 @@ export default class Server {
       this.port = configs.port
     }
 
-    this.endpoints = new Map<string, Endpoint>()
+    this.endpointMap = endpointMap
   }
 
   getAddress () {
     if (!this.server) throw new Error('Server is not start yet')
     return this.server.address()
-  }
-
-  addEndpoint (topic: string, endpoint: Endpoint) {
-    if (this.endpoints.has(topic)) throw new Error('Endpoint already existed!')
-
-    this.endpoints.set(topic, endpoint)
   }
 
   async start () {
@@ -114,7 +108,7 @@ export default class Server {
   }
 
   private async executeEndpoint (topic: string, payload: object) {
-    const endpoint = this.endpoints.get(topic)
+    const endpoint = this.endpointMap.get(topic)
 
     if (!endpoint) throw Boom.badRequest('Invalid topic')
 

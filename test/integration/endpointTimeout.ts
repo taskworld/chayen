@@ -4,8 +4,9 @@ import * as Joi from 'joi'
 import * as Chayen from '../../dist'
 
 test('Should throw on timeout', async () => {
-  const server = new Chayen.Server()
-  server.addEndpoint('test:timeout:plus1', {
+  const endpointMapBuilder = new Chayen.EndpointMapBuilder()
+
+  endpointMapBuilder.addEndpoint('test:timeout:plus1', {
     schema: Joi.object().keys({
       number: Joi.number().required()
     }),
@@ -15,6 +16,8 @@ test('Should throw on timeout', async () => {
       return payload.number + 1
     }
   })
+
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap())
   await server.start()
 
   try {
