@@ -10,29 +10,13 @@ import * as Router from 'koa-router'
 import * as hash from 'object-hash'
 
 import makeRequest from './makeRequest'
+import {
+  CacheOption,
+  Endpoint,
+  ServerConfigs
+} from './types'
 
 const DEFAULT_TIMEOUT = 20000
-
-export interface ServerConfigs {
-  port?: number
-  redisUrl?: string
-}
-
-export interface CacheOption {
-  ttl: number
-  limit?: number
-}
-
-export interface Endpoint {
-  schema: Joi.Schema
-  timeout?: number
-  cacheOption?: CacheOption | false
-  handler (payload: any, delegator: Delegator): any
-}
-
-export interface Delegator {
-  makeDelegateRequestAsync (topic: string, payload: any, target: string): any
-}
 
 export default class Server {
   private app: Koa
@@ -49,7 +33,6 @@ export default class Server {
     }))
 
     this.router = new Router()
-
     this.router.post('/rpc', async ctx => {
       try {
         const result = await this.executeEndpoint(ctx.request.body.topic, ctx.request.body.payload)
