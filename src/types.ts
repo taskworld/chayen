@@ -2,7 +2,10 @@ import * as Joi from 'joi'
 
 export interface ServerConfigs {
   port?: number
-  redisUrl?: string
+  redis?: {
+    redisUrl: string,
+    sentinelMasterName?: string
+  }
 }
 
 export interface CacheOption {

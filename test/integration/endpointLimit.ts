@@ -6,7 +6,7 @@ import * as Joi from 'joi'
 
 import * as Chayen from '../../dist'
 
-const SERVER_CONFIG = { redisUrl: 'redis://127.0.0.1:6379' }
+const REDIS_CONFIG = { redisUrl: 'redis://127.0.0.1:6379' }
 
 test('Should return normal response when request not exceed limit', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_limit_1.txt')
@@ -21,7 +21,9 @@ test('Should return normal response when request not exceed limit', async () => 
     cacheOption: { ttl: 5, limit: 3 }
   })
 
-  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), {
+    redis: REDIS_CONFIG
+  })
   await server.start()
 
   const makeRequestToFileRead1 = async () => Chayen.makeRequest(
@@ -57,7 +59,9 @@ test('Should return cache if request exceed limit', async () => {
     cacheOption: { ttl: 5, limit: 2 }
   })
 
-  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), {
+    redis: REDIS_CONFIG
+  })
   await server.start()
 
   const makeRequestToFileRead2 = async () => Chayen.makeRequest(
@@ -93,7 +97,9 @@ test('Should return normal response limit window has ended', async () => {
     cacheOption: { ttl: 1, limit: 2 }
   })
 
-  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), {
+    redis: REDIS_CONFIG
+  })
   await server.start()
 
   const makeRequestToFileRead3 = async () => Chayen.makeRequest(

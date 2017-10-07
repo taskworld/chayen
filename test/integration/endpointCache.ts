@@ -6,7 +6,7 @@ import * as Joi from 'joi'
 
 import * as Chayen from '../../dist'
 
-const SERVER_CONFIG = { redisUrl: 'redis://127.0.0.1:6379' }
+const REDIS_CONFIG = { redisUrl: 'redis://127.0.0.1:6379' }
 
 test('Should return response normally when redis is not available', async () => {
   const filePath = path.join(__dirname, 'TEST_FILES', 'test_cache_1.txt')
@@ -22,7 +22,9 @@ test('Should return response normally when redis is not available', async () => 
   })
 
   const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), {
-    redisUrl: 'redis://127.0.0.1:555555555'
+    redis: {
+      redisUrl: 'redis://127.0.0.1:555555555'
+    }
   })
   await server.start()
 
@@ -52,7 +54,9 @@ test('Should return response normally when cache is not found and no limit speci
     cacheOption: { ttl: 10 }
   })
 
-  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), {
+    redis: REDIS_CONFIG
+  })
   await server.start()
 
   fs.writeFileSync(filePath, 'data')
@@ -81,7 +85,9 @@ test('Should return cache when cache is available and no limit specified', async
     cacheOption: { ttl: 10 }
   })
 
-  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), {
+    redis: REDIS_CONFIG
+  })
   await server.start()
 
   fs.writeFileSync(filePath, 'old_data')
@@ -118,7 +124,9 @@ test('Should not return cache if cache expired and no limit specified', async ()
     cacheOption: { ttl: 1 }
   })
 
-  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), SERVER_CONFIG)
+  const server = new Chayen.Server(endpointMapBuilder.getEndpointMap(), {
+    redis: REDIS_CONFIG
+  })
   await server.start()
 
   fs.writeFileSync(filePath, 'old_data')

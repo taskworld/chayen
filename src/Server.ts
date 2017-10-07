@@ -9,6 +9,7 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import * as hash from 'object-hash'
 
+import createRedisClient from './createRedisClient'
 import makeRequest from './makeRequest'
 import {
   CacheOption,
@@ -46,8 +47,8 @@ export default class Server {
 
     this.app.use(this.router.routes())
 
-    if (configs.redisUrl) {
-      this.redis = new Redis(configs.redisUrl)
+    if (configs.redis) {
+      this.redis = createRedisClient(configs.redis.redisUrl, configs.redis.sentinelMasterName)
     }
 
     if (configs.port) {
