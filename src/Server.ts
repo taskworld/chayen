@@ -14,7 +14,7 @@ import makeRequest from './makeRequest'
 import {
   CacheOption,
   Endpoint,
-  ServerConfigs
+  ServerConfig
 } from './types'
 
 const DEFAULT_TIMEOUT = 20000
@@ -27,7 +27,7 @@ export default class Server {
   private endpointMap: Map<string, Endpoint>
   private server: http.Server
 
-  constructor (endpointMap: Map<string, Endpoint>, configs: ServerConfigs = {}) {
+  constructor (endpointMap: Map<string, Endpoint>, config: ServerConfig = {}) {
     this.app = new Koa()
     this.app.use(bodyParser({
       enableTypes: [ 'json' ]
@@ -47,12 +47,12 @@ export default class Server {
 
     this.app.use(this.router.routes())
 
-    if (configs.redis) {
-      this.redis = createRedisClient(configs.redis.redisUrl, configs.redis.sentinelMasterName)
+    if (config.redis) {
+      this.redis = createRedisClient(config.redis.redisUrl, config.redis.sentinelMasterName)
     }
 
-    if (configs.port) {
-      this.port = configs.port
+    if (config.port) {
+      this.port = config.port
     }
 
     this.endpointMap = endpointMap

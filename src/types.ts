@@ -1,6 +1,6 @@
 import * as Joi from 'joi'
 
-export interface ServerConfigs {
+export interface ServerConfig {
   port?: number
   redis?: {
     redisUrl: string,
