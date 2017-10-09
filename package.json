@@ -1,6 +1,6 @@
 {
   "name": "chayen",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "description": "An RPC framework with so much hype going on. such wow.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
