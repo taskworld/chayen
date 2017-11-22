@@ -36,7 +36,7 @@ export default class Server {
     this.router = new Router()
     this.router.post('/rpc', async ctx => {
       try {
-        const result = await this.executeEndpoint(ctx.request.body.topic, ctx.request.body.payload)
+        const result = await this.executeEndpoint(ctx.request.body.topic, ctx.request.body.payload, ctx.headers)
         ctx.body = { payload: result }
       } catch (err) {
         const boomError = Boom.boomify(err, { override: false })
@@ -108,7 +108,7 @@ export default class Server {
     return false
   }
 
-  private async executeEndpoint (topic: string, payload: object) {
+  private async executeEndpoint (topic: string, payload: object, headers?: object) {
     const endpoint = this.endpointMap.get(topic)
 
     if (!endpoint) throw Boom.badRequest('Invalid topic')
@@ -133,7 +133,7 @@ export default class Server {
     try {
       const delegator = {
         makeDelegateRequestAsync: (topic: string, payload: any, target: string) => {
-          return makeRequest(topic, payload, target)
+          return makeRequest(topic, payload, target, headers)
         }
       }
       result = await Bluebird
