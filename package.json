@@ -38,12 +38,14 @@
     "body-parser": "^1.18.2",
     "boom": "^5.2.0",
     "ioredis": "^3.1.4",
+    "jaeger-client": "^3.6.0",
     "joi": "^11.1.1",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.2.1",
     "lodash": "^4.17.4",
-    "object-hash": "^1.1.8"
+    "object-hash": "^1.1.8",
+    "opentracing": "^0.14.1"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.12",
